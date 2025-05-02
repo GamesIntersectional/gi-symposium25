@@ -35,6 +35,7 @@
       text-decoration: none;
       color: #3c1053;
       font-weight: bold;
+      cursor: pointer;
     }
     nav a:hover {
       text-decoration: underline;
@@ -67,23 +68,23 @@
 </head>
 <body>
   <header>
-    ✨ Games Intersectional Symposium 2025 ✨<br/>
-   
+    ✨ GIRT Symposium 2025 ✨<br/>
+    A Queer Games Community Gathering
   </header>
 
   <nav>
-    <a href="#symposium">Symposium</a>
-    <a href="#apply">Apply</a>
-    <a href="#timeline">Timeline</a>
-    <a href="#proceedings">Proceedings</a>
-    <a href="#contact">Contact</a>
-    <a href="#about">About Us</a>
+    <a href="#symposium" onclick="showSection('symposium')">Symposium</a>
+    <a href="#apply" onclick="showSection('apply')">Apply</a>
+    <a href="#timeline" onclick="showSection('timeline')">Timeline</a>
+    <a href="#proceedings" onclick="showSection('proceedings')">Proceedings</a>
+    <a href="#contact" onclick="showSection('contact')">Contact</a>
+    <a href="#about" onclick="showSection('about')">About Us</a>
   </nav>
 
   <main>
     <section id="symposium">
       <h2>🎮 Symposium</h2>
-      <p><strong>September 19–20, 2025</strong> · Fully Online ·</p>
+      <p><strong>September 19–20, 2025</strong> · Fully Online · Queer, playful, community-centered</p>
       <p>We're creating a cozy, radical space for queer, disabled, neurodivergent, migrant, and otherwise magical folks to come together around games, art, care, and resistance.</p>
     </section>
 
@@ -120,12 +121,25 @@
 
     <details id="about">
       <summary>🌈 About Us</summary>
-      <p>The GIRT Symposium is organized by <strong>Games Intersectional</strong>, a community of queer game researchers, artists, developers, and dreamers holding space across borders and identities. We believe in joy, care, play, and resistance.</p>
+      <p>Games Intersectional is an interdisciplinary community of researchers, designers, and artists who explore games through queer, feminist, anti-colonial, and intersectional lenses. We create space for critical conversations, playful experimentation, and collaborative care. The GI Symposium is one of the ways we amplify the work and voices that matter most to us.</p>
     </details>
   </main>
 
   <footer>
-    💖 Hosted by Games Intersectional · GitHub Pages · Made with queer joy
+    💖 Hosted with love by Games Intersectional · GitHub Pages · Made with queer joy
   </footer>
+
+  <script>
+    function showSection(id) {
+      const all = document.querySelectorAll('details');
+      all.forEach((el) => {
+        if (el.id === id) {
+          el.open = true;
+        } else {
+          el.open = false;
+        }
+      });
+    }
+  </script>
 </body>
 </html>
