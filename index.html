@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GI Symposium 2025</title>
+  <title>GIRT Symposium 2025</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
+
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-family: 'Atkinson Hyperlegible', sans-serif;
       background: linear-gradient(135deg, #ffb3ec, #b3d9ff, #baffc9);
       color: #3c1053;
       line-height: 1.6;
@@ -21,6 +23,22 @@
       font-size: 2.5rem;
       text-shadow: 2px 2px #3c1053aa;
     }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #ffe0f0;
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #3c1053;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
     main {
       padding: 2rem;
       max-width: 800px;
@@ -29,20 +47,15 @@
       border-radius: 1rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
-    section {
-      margin-bottom: 2rem;
+    details {
+      margin-bottom: 1.5rem;
     }
-    h2 {
-      color: #cc0066;
-      margin-top: 0;
-    }
-    a {
-      color: #0077cc;
-      text-decoration: none;
+    summary {
+      font-size: 1.3rem;
       font-weight: bold;
-    }
-    a:hover {
-      text-decoration: underline;
+      color: #cc0066;
+      cursor: pointer;
+      padding: 0.5rem 0;
     }
     footer {
       text-align: center;
@@ -54,34 +67,65 @@
 </head>
 <body>
   <header>
-    🎮 GI Symposium 2025 🎨<br/>
-    A Queer Games Community Gathering
+    ✨ Games Intersectional Symposium 2025 ✨<br/>
+   
   </header>
+
+  <nav>
+    <a href="#symposium">Symposium</a>
+    <a href="#apply">Apply</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#proceedings">Proceedings</a>
+    <a href="#contact">Contact</a>
+    <a href="#about">About Us</a>
+  </nav>
+
   <main>
-    <section>
-      <h2>📅 Save the Date</h2>
-      <p><strong>September 19–20, 2025</strong> · Fully Online · Queer, playful, community-centered</p>
+    <section id="symposium">
+      <h2>🎮 Symposium</h2>
+      <p><strong>September 19–20, 2025</strong> · Fully Online ·</p>
+      <p>We're creating a cozy, radical space for queer, disabled, neurodivergent, migrant, and otherwise magical folks to come together around games, art, care, and resistance.</p>
     </section>
 
-    <section>
-      <h2>📣 Call for Contributions (Coming Soon!)</h2>
-      <p>We're organizing a cozy, weird, joyful online symposium centered around queerness, games, and community. Our call for contributions will open in May — and we want your talks, workshops, zines, weird performances, and heartfelt rants.</p>
-      <p>Stay tuned here or <a href="https://substack.com/@gamesintersectional">join our newsletter</a> to be notified when the CfC drops!</p>
-    </section>
+    <details id="apply">
+      <summary>📮 Apply / Submit</summary>
+      <p>Our Call for Contributions opens in May! You'll be able to submit talks, workshops, creative work, and more.</p>
+      <p>Form coming soon — stay tuned!</p>
+    </details>
 
-    <section>
-      <h2>🌈 Who We Are</h2>
-      <p>This symposium is brought to you by the <strong>Games Intersectional</strong> community — a group of queer game lovers, makers, researchers, and weirdos supporting each other across disciplines and borders.</p>
-    </section>
+    <details id="timeline">
+      <summary>⏳ Timeline</summary>
+      <ul>
+        <li><strong>May 2025:</strong> Call for Contributions opens</li>
+        <li><strong>Mid-June 2025:</strong> Submissions close</li>
+        <li><strong>Early July 2025:</strong> Feedback & confirmations</li>
+        <li><strong>September 1:</strong> Final program announced</li>
+        <li><strong>September 19–20:</strong> Symposium!</li>
+      </ul>
+    </details>
 
-    <section>
-      <h2>📬 Contact</h2>
-      <p>Have questions, ideas, or want to help out? Reach us at: <a href="mailto:gamesintersectional@gmail.com">gamesintersectional@gmail.com</a></p>
-    </section>
+    <details id="proceedings">
+      <summary>📚 Proceedings & Zine</summary>
+      <p>We’re offering two forms of sharing work:</p>
+      <ul>
+        <li><strong>Academic Proceedings:</strong> For those who need a formal publication record, we’ll host an open-access PDF collection of selected submissions.</li>
+        <li><strong>Creative Zine:</strong> A colorful, multimedia digital zine filled with weird, beautiful, non-traditional expressions from the symposium — open to everyone!</li>
+      </ul>
+    </details>
+
+    <details id="contact">
+      <summary>📬 Contact</summary>
+      <p>Questions? Ideas? Want to help out? Email us at <a href="mailto:gamesintersectional@gmail.com">gamesintersectional@gmail.com</a>.</p>
+    </details>
+
+    <details id="about">
+      <summary>🌈 About Us</summary>
+      <p>The GIRT Symposium is organized by <strong>Games Intersectional</strong>, a community of queer game researchers, artists, developers, and dreamers holding space across borders and identities. We believe in joy, care, play, and resistance.</p>
+    </details>
   </main>
 
   <footer>
-    💖 Hosted by the GI team · Temporary home via GitHub Pages · Made with queer joy
+    💖 Hosted by Games Intersectional · GitHub Pages · Made with queer joy
   </footer>
 </body>
 </html>
