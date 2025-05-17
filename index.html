@@ -73,6 +73,17 @@
       transform: rotate(-8deg) scale(1.1);
       margin: 0 0.2rem;
     }
+	iframe {
+  max-width: 100%;
+  width: 100%;
+  border: none;
+}
+
+@media only screen and (max-width: 600px) {
+  iframe {
+    height: 2200px; /* or more if the form is long */
+  }
+}
 	
   </style>
 </head>
@@ -175,9 +186,15 @@
     <details id="apply">
       <summary>📮Call for Contributions</summary>
 			<p>You can submit via the embedded form below or <a href="https://forms.gle/AkqbPQL3kTHLTLtS6">open it in a new tab</a>.</p>
-	  
-	  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd731lFk5jTBuEeoibmAERvVocALLJ0KbztM3bXskDwkXfMqA/viewform?embedded=true" width="640" height="3253" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-     
+
+	 <div style="position: relative; width: 100%; height: auto; overflow: hidden;">
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd731lFk5jTBuEeoibmAERvVocALLJ0KbztM3bXskDwkXfMqA/viewform?embedded=true"
+    width="100%" height="2000" frameborder="0" marginheight="0" marginwidth="0"
+    style="max-width: 100%; border: none;">
+    Loading…
+  </iframe>
+</div>
+	 
     </details>
 
     <details id="timeline">
