@@ -16,14 +16,17 @@
       color: #3c1053;
       line-height: 1.6;
     }
+	
     header {
       background: #ff69b4cc;
-      padding: 2rem;
+      padding: 3rem 2rem 1.5rem;
       text-align: center;
       color: white;
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       text-shadow: 2px 2px #3c1053aa;
+      font-family: 'Comfortaa', cursive;
     }
+	
     nav {
       display: flex;
       justify-content: center;
@@ -65,13 +68,18 @@
       font-size: 0.9rem;
       color: #444;
     }
+	    .emoji-left, .emoji-right {
+      display: inline-block;
+      transform: rotate(-8deg) scale(1.1);
+      margin: 0 0.2rem;
+    }
+	
   </style>
 </head>
 <body>
   <header>
-    ✨ Games Intersectional Symposium 2025 ✨<br/>
-  
-  </header>
+  <span class="emoji-left">✨</span> <span class="header-text">Games Intersectional Symposium 2025</span> <span class="emoji-right">🎮</span><br/>
+</header>
 
   <nav>
     <a href="#info" onclick="showSection('info')">Info</a>
@@ -107,9 +115,9 @@
 
 	  <h3> What is intersectionality ?</h3>
 	  <p style="font-size: 1.1rem;">
-		Intersectionality is a concept developed by legal scholar Kimberlé Crenshaw to describe how different forms of oppression, like racism, sexism, ableism, classism, and more, don’t act separately, but overlap and reinforce each other.
-
-		A queer migrant woman will face different challenges than a white disabled man or a neurodivergent trans person — because systems of oppression are interconnected.
+		Intersectionality is a concept developed by legal scholar Kimberlé Crenshaw to describe how different forms of oppression, like racism, sexism, ableism, classism, and more, don’t act separately, but overlap and reinforce each other. A queer migrant woman will face different challenges than a white disabled man or a neurodivergent trans person — because systems of oppression are interconnected.
+		
+		</br>
 
 		We believe designing inclusive spaces means recognizing those intersections — and also our limitations. We know that intersectionality was not coined for white academics, but as a framework rooted in the lived experiences and resistance of Black women and other women of color. We aim to honor that origin by working to create spaces where underrepresented voices are not only heard, but centered.
 
@@ -236,10 +244,19 @@
 	   <p> If you have any thoughts on how we can make the symposium, or this website, more accessible or inclusive for you, please let us know.</p>
     </details>
 	
+	
+<section style="text-align: center; margin: 3rem auto;">
+  <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #3c1053;">
+    With support from:
+  </h3>
+  <img src="glocco.jpg" alt="Logos of supporting organizations including UNESCO Chair and GENE"
+    style="max-width: 100%; height: auto; border-radius: 0.5rem; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+</section>
+	
   </main>
 
   <footer>
-    💖 Hosted by Games Intersectional · GitHub Pages ·
+    Hosted by Games Intersectional · GitHub Pages ·
   </footer>
 
   <script>
