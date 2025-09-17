@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gamesintersectional.github.io/gi-symposium25/sitemap.xml
