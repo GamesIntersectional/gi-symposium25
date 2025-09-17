@@ -111,6 +111,38 @@
   }
 }
 	
+/* Programme schedule */
+.schedule {list-style: none; padding: 0; margin: 1rem 0;}
+.slot {display: grid; grid-template-columns: 120px 1fr; gap: 0.4rem 1rem; align-items: start;
+       padding: 0.8rem 1rem; margin: 0.6rem 0; background: #fffdfa; border-left: 5px solid #b483e3;
+       border-radius: 12px; box-shadow: 0 1px 0 rgba(0,0,0,0.06);}
+.slot .when {font-weight: 700; color: #5a4d79;}
+.slot .title {font-size: 1.05rem; margin-bottom: 0.2rem;}
+.slot .speaker {color: #555;}
+.slot .meta {display: inline-flex; flex-wrap: wrap; gap: 0.35rem; margin-left: 0.4rem;}
+.chip {font-size: 0.75rem; padding: 0.15rem 0.55rem; border-radius: 999px; background: #eee; color: #333;}
+.chip.talk {background: #ffeae6; color: #b9381a;}
+.chip.demo {background: #e6fbff; color: #006b75;}
+.chip.panel {background: #fff0f7; color: #b4006b;}
+.chip.performance {background: #ffecc7; color: #8a5200;}
+.chip.case {background: #e6f3ff; color: #174ea6;}
+.chip.essay {background: #f1e6ff; color: #6b2fb3;}
+.chip.art {background: #e8ffe6; color: #117a37;}
+.chip.opening {background: #e6e6ff; color: #333399;}
+.chip.break {background: #fef4c4; color: #6b5c00;}
+.chip.brunch {background: #fff5e6; color: #6b5c00;}
+.small-note {font-size: 0.95rem; color: #444; margin: 0.4rem 0 1rem;}
+.day-heading {margin-top: 1rem;}
+.poster-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;}
+.poster-grid img {width: 100%; height: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);}
+@media (max-width: 700px){
+  .slot {grid-template-columns: 1fr; }
+  .slot .when {margin-bottom: 0.25rem;}
+  .poster-grid {grid-template-columns: 1fr;}
+}
+	
+	
+	
   </style>
 </head>
 <body>
@@ -120,6 +152,7 @@
 
   <nav>
     <a href="#info" onclick="showSection('info')">Info</a>
+	<a href="#program" onclick="showSection('program')">Programme</a>
     <a href="#apply" onclick="showSection('apply')">CfC</a>
     <a href="#timeline" onclick="showSection('timeline')">Timeline</a>
     <a href="#proceedings" onclick="showSection('proceedings')">Proceedings</a>
@@ -205,9 +238,202 @@
   <li>Reflective Essay</li>
   <li>Community Project</li>
 </ul>
+</details>
+	  
+	  
+	  <details id="program">
+      <summary>🗓️ Programme</summary>
+      <p class="small-note">All times in CET (Vienna). Online event.</p>
+
+
+
+      <div class="poster-grid" aria-label="Printable posters of the schedule">
+        <figure>
+          <img src="1.png" alt="Day 1 poster: Games Intersectional Symposium 2025, Friday schedule with sessions from 10:00 to 15:40 including talks by Nic Kilzer, Alex; demo by Eileen Carette; talk by Flo Schäfer; performance Intrapology by Zoyander Street." />
+        </figure>
+        <figure>
+          <img src="2.png" alt="Day 2 poster: Saturday schedule with brunch at 10:00; sessions by Milica Marković, Srikanth, Laura, Jack Gutmann, Ricardo; and Tan Schütz; end at 15:40." />
+        </figure>
+      </div>
+
+
+      <h3 class="day-heading">Friday, 19 September — Day 1</h3>
+      <ul class="schedule" aria-label="Day 1 schedule">
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T10:00">10:00</time> – <time datetime="2025-09-19T10:20">10:20</time></div>
+          <div>
+            <div class="title">Conference Opening</div>
+            <div class="meta"><span class="chip opening">Opening</span></div>
+          </div>
+        </li>
+		
+		
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T10:20">10:20</time> – <time datetime="2025-09-19T10:55">10:55</time></div>
+          <div>
+            <div class="title">Queering Play and Playing Queer in <em>The Sims 4</em></div>
+            <div class="speaker">Nic Kilzer</div>
+            <div class="meta"><span class="chip talk">Talk</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T10:55">10:55</time> – <time datetime="2025-09-19T11:30">11:30</time></div>
+          <div>
+            <div class="title">The Role of the (Queer) Body in Role‑Playing Practices — An Autoethnographic Analysis of Cosplay Experiences</div>
+            <div class="speaker">Alex</div>
+            <div class="meta"><span class="chip talk">Talk</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T11:30">11:30</time> – <time datetime="2025-09-19T12:05">12:05</time></div>
+          <div>
+            <div class="title">Customizable* Character Creators in Games</div>
+            <div class="speaker">Eileen Carette</div>
+            <div class="meta"><span class="chip talk">Talk</span> <span class="chip demo">Game Demo</span></div>
+          </div>
+        </li>
+
+        <li class="slot" aria-label="Lunch break">
+          <div class="when"><time datetime="2025-09-19T12:05">12:05</time> – <time datetime="2025-09-19T13:00">13:00</time></div>
+          <div>
+            <div class="title">Lunch Break</div>
+            <div class="meta"><span class="chip break">Break</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T13:00">13:00</time> – <time datetime="2025-09-19T13:35">13:35</time></div>
+          <div>
+            <div class="title">Game Design Justice: Towards a Community‑led Practice to Create the Games We Need</div>
+            <div class="speaker">Erin List</div>
+            <div class="meta"><span class="chip art">Interactive Art</span> <span class="chip talk">Talk</span> <span class="chip panel">Panel Discussion</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T13:35">13:35</time> – <time datetime="2025-09-19T14:10">14:10</time></div>
+          <div>
+            <div class="title">In Other Bodies — Inhabiting the Nonhuman Body in Video Games as a Means for Empathy</div>
+            <div class="speaker">Flo Schäfer</div>
+            <div class="meta"><span class="chip talk">Talk</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T14:10">14:10</time> – <time datetime="2025-09-19T15:25">15:25</time></div>
+          <div>
+            <div class="title">Intrapology</div>
+            <div class="speaker">Zoyander Street</div>
+            <div class="meta"><span class="chip performance">Performance</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-19T15:25">15:25</time> – <time datetime="2025-09-19T15:40">15:40</time></div>
+          <div>
+            <div class="title">End of Day 1</div>
+          </div>
+        </li>
+      </ul>
+
+      <h3 class="day-heading">Saturday, 20 September — Day 2</h3>
+      <ul class="schedule" aria-label="Day 2 schedule">
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T10:00">10:00</time> – <time datetime="2025-09-20T10:45">10:45</time></div>
+          <div>
+            <div class="title">Informal Online Brunch</div>
+            <div class="meta"><span class="chip brunch">Social</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T10:45">10:45</time> – <time datetime="2025-09-20T11:00">11:00</time></div>
+          <div>
+            <div class="title">Opening Day 2</div>
+            <div class="meta"><span class="chip opening">Opening</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T11:00">11:00</time> – <time datetime="2025-09-20T11:35">11:35</time></div>
+          <div>
+            <div class="title">Social Innovation and Video Games: Exploring Implications for Learning and Teaching</div>
+            <div class="speaker">Milica Marković</div>
+            <div class="meta"><span class="chip case">Case Study</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T11:35">11:35</time> – <time datetime="2025-09-20T12:10">12:10</time></div>
+          <div>
+            <div class="title">Disruption through Strategic Game Design: Challenging Caste Transmission Using Interactive Media</div>
+            <div class="speaker">Srikanth</div>
+            <div class="meta"><span class="chip essay">Reflective Essay</span> <span class="chip talk">Presentation</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T12:10">12:10</time> – <time datetime="2025-09-20T12:45">12:45</time></div>
+          <div>
+            <div class="title">Congratulations, You’ve Chosen Poorly</div>
+            <div class="speaker">Laura</div>
+            <div class="meta"><span class="chip essay">Reflective Essay</span> <span class="chip art">Creative Writing</span></div>
+          </div>
+        </li>
+
+        <li class="slot" aria-label="Lunch break">
+          <div class="when"><time datetime="2025-09-20T12:45">12:45</time> – <time datetime="2025-09-20T13:40">13:40</time></div>
+          <div>
+            <div class="title">Lunch Break</div>
+            <div class="meta"><span class="chip break">Break</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T13:40">13:40</time> – <time datetime="2025-09-20T14:15">14:15</time></div>
+          <div>
+            <div class="title">No Diversity, No Games: Why Inclusion Is No Longer Optional</div>
+            <div class="speaker">Jack Gutmann</div>
+            <div class="meta"><span class="chip talk">Talk</span> <span class="chip panel">Panel Discussion</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T14:15">14:15</time> – <time datetime="2025-09-20T14:50">14:50</time></div>
+          <div>
+            <div class="title">Ascension Day</div>
+            <div class="speaker">Ricardo</div>
+            <div class="meta"><span class="chip demo">Game Demo</span> <span class="chip performance">Performance</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T14:50">14:50</time> – <time datetime="2025-09-20T15:25">15:25</time></div>
+          <div>
+            <div class="title">An Afternoon at Home: Playtest and Discussion</div>
+            <div class="speaker">Tan Schütz</div>
+            <div class="meta"><span class="chip demo">Game Demo</span> <span class="chip panel">Panel Discussion</span></div>
+          </div>
+        </li>
+
+        <li class="slot">
+          <div class="when"><time datetime="2025-09-20T15:25">15:25</time> – <time datetime="2025-09-20T15:40">15:40</time></div>
+          <div>
+            <div class="title">End of Day 2</div>
+          </div>
+        </li>
+      </ul>
+
+
 	  
 	  
     </details>
+	  
+	  
+   
 
     <details id="apply">
       <summary>📮Call for Contributions</summary>
