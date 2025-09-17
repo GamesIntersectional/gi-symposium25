@@ -539,7 +539,13 @@
 
   <h2 style="text-align: center;"> Organizers of the GI Symposium 2025</h2>
   
-  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 2rem;">
+  <style>
+  @media (max-width: 800px){ #about .org-grid { grid-template-columns: repeat(2, minmax(160px,1fr)); } }
+  @media (max-width: 520px){ #about .org-grid { grid-template-columns: 1fr; } }
+  </style>
+
+
+  <div class="org-grid" style="display:grid; grid-template-columns:repeat(3, minmax(160px,1fr)); justify-items:center; align-items:start; gap:2rem; margin-top:2rem;">
     
     <div style="text-align: center; max-width: 160px;">
       <img src="kseniia.jpg" alt="Kseniia Harshina" style="width: 100%; border-radius: 50%;">
