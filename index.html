@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  
+  <!-- HEAD additions -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+<meta name="description" content="Games Intersectional Symposium 2025 — online, Sept 19–20. Queer, disabled, neurodivergent, migrant voices in games: talks, panels, demos, performance. Free to attend.">
+<meta property="og:title" content="GI Symposium 2025 — Sept 19–20 (Online)">
+<meta property="og:description" content="Talks, panels, demos, performance. Free to attend.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#ff69b4">
+  
+  
   <title>GI Symposium 2025</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
@@ -141,7 +153,14 @@
   .poster-grid {grid-template-columns: 1fr;}
 }
 	
-	
+  .sr-only{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;}
+  nav a:focus-visible{outline:3px solid #3c1053; outline-offset:2px; border-radius:6px;}
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important}
+  }
+  /* Slightly stronger chip text for contrast */
+  .chip.talk{color:#9a003f;}
+  .chip.panel{color:#7b0050;}
 	
   </style>
 </head>
@@ -168,8 +187,17 @@
 	    <p style="font-size: 1.1rem;">We're creating a space for queer, disabled, neurodivergent, migrant people to come together around games, art, care, and resistance. Whether you’re an academic, a student, a developer, a streamer, or just curious about games — you belong here!
   </p>
 	  
-	  <h2> The Call for Contributions is open until the 30th of June 2025, Time: 23:59 (anywhere on earth) </h2>
+	 <!--   <h2> The Call for Contributions is open until the 30th of June 2025, Time: 23:59 (anywhere on earth) </h2>
+	  -->
 	  
+      <div class="poster-grid" aria-label="Printable posters of the schedule">
+        <figure>
+          <img src="1.png" alt="Day 1 poster: Games Intersectional Symposium 2025, Friday schedule with sessions from 10:00 to 15:40 including talks by Nic Kilzer, Alex; demo by Eileen Carette; talk by Flo Schäfer; performance Intrapology by Zoyander Street." />
+        </figure>
+        <figure>
+          <img src="2.png" alt="Day 2 poster: Saturday schedule with brunch at 10:00; sessions by Milica Marković, Srikanth, Laura, Jack Gutmann, Ricardo; and Tan Schütz; end at 15:40." />
+        </figure>
+      </div>
 		  
 		<p style="font-size: 1.1rem; margin-top: 2rem; padding: 1rem; background-color: #fceeff; border-left: 5px solid #cc00cc; border-radius: 0.5rem;">
 		<strong>The symposium is completely free to attend and participate in!</strong>
@@ -243,18 +271,10 @@
 	  
 	  <details id="program">
       <summary>🗓️ Programme</summary>
-      <p class="small-note">All times in CET (Vienna). Online event.</p>
+	  
+	  
+      <p class="small-note">All times in <strong>CEST (Europe/Vienna, UTC+2)</strong>. Online in GatherTown. </p>
 
-
-
-      <div class="poster-grid" aria-label="Printable posters of the schedule">
-        <figure>
-          <img src="1.png" alt="Day 1 poster: Games Intersectional Symposium 2025, Friday schedule with sessions from 10:00 to 15:40 including talks by Nic Kilzer, Alex; demo by Eileen Carette; talk by Flo Schäfer; performance Intrapology by Zoyander Street." />
-        </figure>
-        <figure>
-          <img src="2.png" alt="Day 2 poster: Saturday schedule with brunch at 10:00; sessions by Milica Marković, Srikanth, Laura, Jack Gutmann, Ricardo; and Tan Schütz; end at 15:40." />
-        </figure>
-      </div>
 
 
       <h3 class="day-heading">Friday, 19 September — Day 1</h3>
@@ -326,7 +346,7 @@
           <div class="when"><time datetime="2025-09-19T14:10">14:10</time> – <time datetime="2025-09-19T15:25">15:25</time></div>
           <div>
             <div class="title">Intrapology</div>
-            <div class="speaker">Zoyander Street</div>
+            <div class="speaker">Zoyander Street and team</div>
             <div class="meta"><span class="chip performance">Performance</span></div>
           </div>
         </li>
@@ -487,25 +507,25 @@
   <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 2rem;">
     
     <div style="text-align: center; max-width: 160px;">
-      <img src="kseniia.jpg" alt="Your name" style="width: 100%; border-radius: 50%;">
+      <img src="kseniia.jpg" alt="Kseniia Harshina" style="width: 100%; border-radius: 50%;">
       <h3 style="margin: 0.5rem 0 0;">🐸 Kseniia Harshina (she/her) </h3>
       <p style="font-size: 0.9rem;"> I’m a PhD student researching games and forced migration. I believe academia can use more community and diversity!</p>
     </div>
 
 	    <div style="text-align: center; max-width: 160px;">
-      <img src="rachel.jpg" alt="Rachel" style="width: 100%; border-radius: 50%;">
+      <img src="rachel.jpg" alt="Rachel Gorden" style="width: 100%; border-radius: 50%;">
       <h3 style="margin: 0.5rem 0 0;">🥑 Rachel Gorden (she/her) </h3>
       <p style="font-size: 0.9rem;"> I work with international students and hold an MA in Game Studies.</p>
     </div>
 
     <div style="text-align: center; max-width: 160px;">
-      <img src="tan.jpg" alt="Tan" style="width: 100%; border-radius: 50%;">
+      <img src="tan.jpg" alt="Tan Schuetz" style="width: 100%; border-radius: 50%;">
       <h3 style="margin: 0.5rem 0 0;">🐼 Tan Schuetz (they/them) </h3>
       <p style="font-size: 0.9rem;"> I hold an MA in Game Studies and teach about topics of gender and queerness in games. </p>
     </div>
 	
     <div style="text-align: center; max-width: 160px;">
-      <img src="tom.jpg" alt="Tom" style="width: 100%; border-radius: 50%;">
+      <img src="tom.jpg" alt="Tom Tucek" style="width: 100%; border-radius: 50%;">
       <h3 style="margin: 0.5rem 0 0;">🦄 Tom Tucek (he/him/any) </h3>
       <p style="font-size: 0.9rem;">I’m a PhD student in Game Engineering, exploring how AI can be used ethically and thoughtfully in games.</p>
     </div>
