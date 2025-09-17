@@ -61,27 +61,29 @@
       line-height: 1.6;
     }
 	
-    header {
-      background: #ff69b4cc;
-      padding: 3rem 2rem 1.5rem;
-      text-align: center;
-      color: white;
-      font-size: 2.8rem;
-      text-shadow: 2px 2px #3c1053aa;
-      font-family: 'Comfortaa', cursive;
-    }
-	
+header{
+  background: #ff9ccd;
+  padding: 3rem 2rem 1.5rem;
+  text-align: center;
+  color: #2e1740;
+  font-size: 2.8rem;
+  text-shadow: 0 1px 1px rgba(0,0,0,.10);
+  font-family: 'Comfortaa', cursive;
+  border-bottom: 1px solid rgba(46,23,64,.08); /* subtle separation */
+}
+
     nav {
       display: flex;
       justify-content: center;
-      background: #ffe0f0;
+      background: #a8f6ff; 
       padding: 1rem;
       flex-wrap: wrap;
     }
+	
     nav a {
       margin: 0 1rem;
       text-decoration: none;
-      color: #3c1053;
+      color: #2e1740;
       font-weight: bold;
       cursor: pointer;
     }
@@ -102,7 +104,7 @@
     summary {
       font-size: 1.3rem;
       font-weight: bold;
-      color: #cc0066;
+      color: #2e1740;
       cursor: pointer;
       padding: 0.5rem 0;
     }
@@ -141,8 +143,11 @@
     }
 	    .emoji-left, .emoji-right {
       display: inline-block;
-      transform: rotate(-8deg) scale(1.1);
+      transform: rotate(-8deg) scale(0.9);
       margin: 0 0.2rem;
+	text-shadow:
+    0 1px 0 rgba(255,255,255,.8),     /* faint highlight */
+    0 3px 8px rgba(46,23,64,.10);     /* soft drop */
     }
 	iframe {
   max-width: 100%;
@@ -195,12 +200,65 @@
   .chip.talk{color:#9a003f;}
   .chip.panel{color:#7b0050;}
 	
+	
+	
+	/* Lay out the trio cleanly */
+header .brand{
+  display: inline-flex;
+  align-items: center;          /* baseline-ish alignment */
+  gap: .5rem;
+}
+
+@keyframes goose-bob {
+  0%,100% { transform: translateY(2px); }
+  50%     { transform: translateY(0); }
+}
+/* Goose sizing + subtle outline */
+.logo-goose{
+  height: clamp(72px, 9vw, 120px);     /* responsive but modest */
+  margin-right: .4rem;
+  /* faux stroke using 8 directional drop-shadows */
+  filter:
+    drop-shadow( 1px  0   0 #fff)
+    drop-shadow(-1px  0   0 #fff)
+    drop-shadow( 0    1px 0 #fff)
+    drop-shadow( 0   -1px 0 #fff)
+    drop-shadow( 1px  1px 0 #fff)
+    drop-shadow(-1px  1px 0 #fff)
+    drop-shadow( 1px -1px 0 #fff)
+    drop-shadow(-1px -1px 0 #fff)
+    /* subtle lift */
+    drop-shadow(0 6px 12px rgba(46,23,64,.12));
+  transform: translateY(2px);        /* tiny nudge to match text baseline */
+  animation: goose-bob 2s ease-in-out infinite;
+}
+
+@keyframes game-bob {
+  0%,100% { transform: translateY(2px); }
+  50%     { transform: translateY(0); }
+}
+
+	
+	
   </style>
 </head>
 <body>
-  <header>
-  <span class="emoji-left">✨</span> <span class="header-text">Games Intersectional Symposium 2025</span> <span class="emoji-right">🎮</span><br/>
+
+
+<header>
+  <span class="brand">
+
+	  <span class="emoji-left" aria-hidden="true">✨🎮</span><br/>
+  <span class="header-text">Games Intersectional Symposium 2025</span>
+    <img
+      src="gis.png"
+      alt="Scholarly goose carrying pastel books"
+      class="logo-goose"
+      decoding="async"
+    />
+	
 </header>
+
 
   <nav>
     <a href="#info" onclick="showSection('info')">Info</a>
