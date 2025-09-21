@@ -112,9 +112,6 @@
     .station.dim text,
     .station.dim circle,
     .station.dim .label-bg{ opacity:.22 }
-    /* fade other talks when a route is active */
-    .talk.dim rect, .talk.dim text { opacity: .35 }
-
 
     #legend{max-height:240px; overflow:auto; padding-right:6px}
 
@@ -467,8 +464,7 @@
   }
 
   svg.addEventListener('pointerdown', function(e){
-    var obj=pickTarget(e.target);
-    if(!obj){ if(lockedHighlight){ lockedHighlight=null; updateHighlightClasses(); } return; }
+    var obj=pickTarget(e.target); if(!obj) return;
     if(!ui.edit.checked) return;
     e.preventDefault();
     if(e.shiftKey && !e.altKey){ renameObj(obj); return; }
@@ -533,13 +529,7 @@
     // routes dim
     qAll('.route').forEach(function(p){
       p.classList.toggle('dim', !!activeId && p.dataset.talk!==activeId);
-    
-    // talks: dim non-active talk cards
-    qAll('#talks > g.talk').forEach(function(g){
-      var isActive = !!activeId && g.getAttribute('data-id') === activeId;
-      g.classList.toggle('dim', !!activeId && !isActive);
     });
-});
     // stations: only connected to active route stay bright
     var connected = null;
     if(activeId){
@@ -592,7 +582,7 @@
   function setDrawer(open){ document.body.classList.toggle('drawer-open', !!open); }
   btnMenu.addEventListener('click', function(){ setDrawer(!document.body.classList.contains('drawer-open')); });
   scrim.addEventListener('click', function(){ setDrawer(false); });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ lockedHighlight=null; updateHighlightClasses(); document.body.classList.remove('drawer-open'); }});
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.body.classList.remove('drawer-open'); }});
 
   // init — prefer URL hash, then localStorage; auto-fit when fresh
   var loadedFromHash = loadFromHash();
