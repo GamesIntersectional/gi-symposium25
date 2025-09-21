@@ -45,21 +45,17 @@
       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
 
-    header{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #ececef;background:#ffffffd9;backdrop-filter: blur(8px); flex-wrap:wrap}
+    header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #ececef;background:#ffffffd9;backdrop-filter: blur(8px)}
     h1{margin:0;font:700 18px/1 'Baloo 2', Inter}
     .sub{color:var(--muted);font-size:13px;margin-left:6px}
-    .left{display:flex; align-items:center; gap:10px}
-    #btnMenu{border:1px solid #e7e7ef;background:#fff;border-radius:10px;padding:6px 10px;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
-    #btnMenu:active{transform:translateY(1px)}
 
     .wrap{display:grid;grid-template-columns:360px 1fr; height:calc(100% - 54px)}
 
-    aside{padding:14px;border-right:1px solid #ececef;background:linear-gradient(180deg,#fff 0,#fdfbff 120%);overflow:auto;z-index:5}
+    aside{padding:14px;border-right:1px solid #ececef;background:linear-gradient(180deg,#fff 0,#fdfbff 120%);overflow:auto}
     .panel{background:var(--panel);border-radius:16px;padding:12px;box-shadow:var(--shadow);border:1px solid #efeff4;margin-bottom:12px}
     .panel h3{margin:.2rem 0 .6rem;font:700 15px/1 'Baloo 2', Inter}
 
-    .legend-item{display:flex;align-items:center;gap:10px;margin:7px 0; cursor:default}
-    .legend-item.active{font-weight:700}
+    .legend-item{display:flex;align-items:center;gap:10px;margin:7px 0}
     .swatch{width:28px;height:6px;border-radius:999px;background:#999;box-shadow:inset 0 0 0 1px #00000012}
     .legend-item label{flex:1;display:flex;gap:8px;align-items:center}
     .legend-item input[type="checkbox"]{accent-color:#111;width:16px;height:16px}
@@ -81,15 +77,13 @@
 
     .grid{stroke:#f2f2f7;stroke-width:1}
 
-    .route{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:stroke;transition:opacity .15s ease}
+    .route{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:stroke}
     .route:hover{filter: drop-shadow(0 0 0.8px currentColor)}
     .route.hidden{opacity:.12}
     .route.dim{opacity:.15}
     .route.active{opacity:1}
 
-    /* SVG text outline for legibility */
-    .station text,.talk text{ fill:#111; stroke:#fff; stroke-width:3px; paint-order: stroke fill; pointer-events:auto; user-select:none }
-
+    .station text,.talk text{user-select:none; pointer-events:auto}
     .hit{pointer-events:all;cursor:grab;fill-opacity:0}
     .talk rect{fill:#fff;stroke:#0f172a;stroke-width:3px;rx:18;ry:18}
     .station circle{fill:#fff;stroke:#0f172a;stroke-width:var(--node-outline)}
@@ -108,28 +102,11 @@
     .hint{color:var(--muted);font-size:12px;margin-top:4px}
     input[type="file"]{display:none}
     label.file{display:inline-flex;gap:6px;align-items:center}
-
-    /* Mobile drawer */
-    .scrim{position:fixed; inset:54px 0 0 0; background:rgba(0,0,0,.08); opacity:0; pointer-events:none; transition:.2s; z-index:4}
-    @media (max-width: 900px){
-      .wrap{grid-template-columns: 1fr}
-      aside{
-        position:fixed; inset:54px auto 0 0; width:min(88vw, 360px);
-        transform: translateX(-100%);
-        transition: transform .25s ease;
-        box-shadow: var(--shadow);
-      }
-      body.drawer-open aside{ transform: translateX(0); }
-      body.drawer-open .scrim{ opacity:1; pointer-events:auto; }
-    }
   </style>
 </head>
 <body>
   <header>
-    <div class="left">
-      <button id="btnMenu" aria-label="Toggle menu">☰</button>
-      <h1>GI Symposium — Metro Map<span class="sub"> • drag to adjust • double‑click to rename</span></h1>
-    </div>
+    <div><h1>GI Symposium — Metro Map<span class="sub"> • drag to adjust • double‑click to rename</span></h1></div>
     <div class="btn-row">
       <button id="btnFit">Fit</button>
       <button id="btnReset">Reset</button>
@@ -161,11 +138,11 @@
         </div>
         <div class="sep"></div>
         <div id="legend"></div>
-        <div class="hint">Mobile: long‑press (~0.5s) on a label to rename. Hold <b>Shift</b> while dragging to lock axis; hold <b>Alt</b> to bypass snap.</div>
+        <div class="hint">Mobile: long‑press (~0.5s) on a label to rename.</div>
       </div>
       <div class="panel">
         <h3>About</h3>
-        <div class="hint">Self‑contained HTML. Works offline. <b>Autosaves locally</b> and you can <b>Copy Link</b> to encode the layout in the URL for easy sharing or bookmarking. JSON export is still there for versioning. Add <code>?edit=0</code> to share a read‑only view.</div>
+        <div class="hint">Self‑contained HTML. Works offline. <b>Autosaves locally</b> and you can <b>Copy Link</b> to encode the layout in the URL for easy sharing or bookmarking. JSON export is still there for versioning.</div>
       </div>
     </aside>
 
@@ -188,10 +165,9 @@
       <div class="toast" id="toast">Saved</div>
     </main>
   </div>
-  <div class="scrim" id="scrim"></div>
 
 <script>
-// Enhanced: auto-fit, viewer mode (?edit=0), legend isolate/hover, keyboard nudge, mobile drawer
+// Enhanced: auto-fit, viewer mode (?edit=0), legend hover highlight, keyboard nudge
 (function(){
   'use strict';
   var svg = document.getElementById('svg');
@@ -202,8 +178,6 @@
   var gTalks = document.getElementById('talks');
   var legend = document.getElementById('legend');
   var btnRow = document.querySelector('.btn-row');
-  var btnMenu = document.getElementById('btnMenu');
-  var scrim = document.getElementById('scrim');
 
   var ui = {
     edit: document.getElementById('editMode'),
@@ -276,16 +250,7 @@
   var STORAGE_KEY='gi_symposium_map_state_v1';
   function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
   function loadLocal(){ try{ var s=localStorage.getItem(STORAGE_KEY); if(s){ state=JSON.parse(s); return true; } }catch(e){} return false; }
-  function loadFromHash(){
-    try{
-      if(location.hash && location.hash.indexOf('#state=')===0){
-        var raw = decodeURIComponent(location.hash.slice(7));
-        state=JSON.parse(raw); location.hash='';
-        return true;
-      }
-    }catch(e){}
-    return false;
-  }
+  function loadFromHash(){ try{ if(location.hash && location.hash.indexOf('#state=')===0){ var raw = decodeURIComponent(location.hash.slice(7)); state=JSON.parse(raw); location.hash=''; return true; } }catch(e){} return false; }
   function buildShareLink(){ try{ return location.origin+location.pathname+'#state='+encodeURIComponent(JSON.stringify(state)); }catch(e){ return ''; } }
 
   // helpers
@@ -294,21 +259,9 @@
   function qAll(sel){ return Array.from(document.querySelectorAll(sel)); }
   function getStation(id){ return state.stations.find(function(s){ return s.id===id; }); }
   function getTalk(id){ return state.talks.find(function(t){ return t.id===id; }); }
-  function snapValue(n){
-    if(!ui.snap.checked) return n;
-    return Math.round(n/state.grid)*state.grid;
-  }
-  function talkExitPoint(t){
-    if(t.align==='left') return {x:t.x+t.w, y:t.y};
-    if(t.align==='right') return {x:t.x-t.w, y:t.y};
-    if(t.align==='top') return {x:t.x, y:t.y+t.h/2};
-    return {x:t.x+t.w, y:t.y};
-  }
-  function el(name, attrs){
-    var n=document.createElementNS('http://www.w3.org/2000/svg', name);
-    if(attrs){ for(var k in attrs){ if(Object.prototype.hasOwnProperty.call(attrs,k)){ n.setAttribute(k, String(attrs[k])); } } }
-    return n;
-  }
+  function snapValue(n){ return ui.snap.checked ? Math.round(n/state.grid)*state.grid : n; }
+  function talkExitPoint(t){ if(t.align==='left') return {x:t.x+t.w, y:t.y}; if(t.align==='right') return {x:t.x-t.w, y:t.y}; if(t.align==='top') return {x:t.x, y:t.y+t.h/2}; return {x:t.x+t.w, y:t.y}; }
+  function el(name, attrs){ var n=document.createElementNS('http://www.w3.org/2000/svg', name); if(attrs){ for(var k in attrs){ if(Object.prototype.hasOwnProperty.call(attrs,k)){ n.setAttribute(k, String(attrs[k])); } } } return n; }
   function svgPointFrom(x,y){ var pt=svg.createSVGPoint(); pt.x=x; pt.y=y; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
 
   // view / fit
@@ -321,8 +274,7 @@
       var minY=boxes.reduce(function(m,b){return Math.min(m,b.y);}, Infinity);
       var maxX=boxes.reduce(function(m,b){return Math.max(m,b.x+b.width);}, -Infinity);
       var maxY=boxes.reduce(function(m,b){return Math.max(m,b.y+b.height);}, -Infinity);
-      var pad=60; var w=maxX-minX, h=maxY-minY;
-      if(!isFinite(w)||!isFinite(h)||w<=0||h<=0){ view={x:0,y:0,w:1600,h:1000}; applyView(); return; }
+      var pad=60; var w=maxX-minX, h=maxY-minY; if(!isFinite(w)||!isFinite(h)||w<=0||h<=0){ view={x:0,y:0,w:1600,h:1000}; applyView(); return; }
       view={x:minX-pad,y:minY-pad,w:w+pad*2,h:h+pad*2}; applyView();
     }catch(e){ view={x:0,y:0,w:1600,h:1000}; applyView(); }
   }
@@ -334,15 +286,9 @@
 
   // draw
   var selected={kind:null,id:null};
-  var hoverHighlight=null;
-  var lockedHighlight=null;
+  var highlighted=null;
 
-  function drawGrid(){
-    gGrid.innerHTML='';
-    var step=state.grid; var x,y;
-    for(x=0;x<=1600;x+=step){ gGrid.appendChild(el('line',{x1:x,y1:0,x2:x,y2:1000,'class':'grid'})); }
-    for(y=0;y<=1000;y+=step){ gGrid.appendChild(el('line',{x1:0,y1:y,x2:1600,y2:y,'class':'grid'})); }
-  }
+  function drawGrid(){ gGrid.innerHTML=''; var step=state.grid; var x,y; for(x=0;x<=1600;x+=step){ gGrid.appendChild(el('line',{x1:x,y1:0,x2:x,y2:1000,'class':'grid'})); } for(y=0;y<=1000;y+=step){ gGrid.appendChild(el('line',{x1:0,y1:y,x2:1600,y2:y,'class':'grid'})); } }
 
   function draw(){
     document.documentElement.style.setProperty('--route', String(ui.width.value)+'px');
@@ -354,11 +300,7 @@
       var pts=[ talkExitPoint(t) ].concat(r.through.map(getStation).map(function(s){ return {x:s.x,y:s.y}; }));
       var d = ui.metro.checked ? pathMetro(pts) : pathSmooth(pts);
       var p = el('path',{d:d,'class':'route',stroke:color,'stroke-width':getComputedStyle(document.documentElement).getPropertyValue('--route')});
-      p.dataset.talk=r.talk;
-      var activeId = lockedHighlight || hoverHighlight;
-      if(activeId && activeId!==r.talk) p.classList.add('dim');
-      p.addEventListener('pointerenter', function(){ if(!lockedHighlight) setHover(r.talk); });
-      p.addEventListener('pointerleave', function(){ if(!lockedHighlight) clearHover(); });
+      p.dataset.talk=r.talk; if(highlighted && highlighted!==r.talk) p.classList.add('dim');
       gRoutes.appendChild(p);
     });
 
@@ -384,6 +326,12 @@
       g.appendChild(hit); g.appendChild(r); g.appendChild(label); gTalks.appendChild(g);
     });
 
+    // route hover highlight
+    qAll('.route').forEach(function(p){
+      p.addEventListener('pointerenter', function(){ setHighlight(p.dataset.talk); });
+      p.addEventListener('pointerleave', function(){ clearHighlight(); });
+    });
+
     buildLegend();
     if(stage){ if(ui.labels.checked){ stage.classList.remove('hideLabels'); } else { stage.classList.add('hideLabels'); } }
   }
@@ -394,101 +342,24 @@
 
   // delegated interactivity
   var drag=null, pressTimer=null;
-  function beginDrag(obj, clientX, clientY, axisLock){
-    var p=svgPointFrom(clientX, clientY);
-    drag={obj:obj, sx:p.x, sy:p.y, ox:obj.x, oy:obj.y, moved:false, axis:axisLock||null};
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', endDrag);
-  }
-  function onMove(e){
-    if(!drag) return;
-    var p=svgPointFrom(e.clientX,e.clientY);
-    var dx=p.x-drag.sx, dy=p.y-drag.sy;
-    if(!drag.moved && Math.abs(dx)+Math.abs(dy)>2) drag.moved=true;
-
-    // axis lock with Shift
-    if(drag.axis==='x') dy=0;
-    if(drag.axis==='y') dx=0;
-
-    var nx = drag.ox + dx;
-    var ny = drag.oy + dy;
-
-    // Alt bypasses snap
-    var snappedX = e.altKey ? nx : snapValue(nx);
-    var snappedY = e.altKey ? ny : snapValue(ny);
-
-    drag.obj.x = snappedX;
-    drag.obj.y = snappedY;
-    draw();
-  }
+  function beginDrag(obj, clientX, clientY){ var p=svgPointFrom(clientX, clientY); drag={obj:obj, sx:p.x, sy:p.y, ox:obj.x, oy:obj.y, moved:false}; window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', endDrag); }
+  function onMove(e){ if(!drag) return; var p=svgPointFrom(e.clientX,e.clientY); var dx=p.x-drag.sx, dy=p.y-drag.sy; if(Math.abs(dx)>2||Math.abs(dy)>2) drag.moved=true; drag.obj.x=snapValue(drag.ox+dx); drag.obj.y=snapValue(drag.oy+dy); draw(); }
   function endDrag(){ window.clearTimeout(pressTimer); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', endDrag); drag=null; saveLocal(); }
-
   function renameObj(obj){ if(!ui.edit.checked) return; var v=window.prompt('Rename', obj.label||''); if(v!==null){ v=String(v).trim(); if(v){ obj.label=v; draw(); saveLocal(); } } }
   function pickTarget(el){ var kind=el.getAttribute('data-kind'); var id=el.getAttribute('data-id'); if(!kind||!id) return null; selected={kind:kind,id:id}; draw(); return (kind==='station')? getStation(id) : getTalk(id); }
 
-  svg.addEventListener('pointerdown', function(e){
-    var obj=pickTarget(e.target); if(!obj) return;
-    if(!ui.edit.checked) return;
-    e.preventDefault();
-    if(e.shiftKey && !e.altKey){ renameObj(obj); return; }
-    var axis = e.shiftKey ? (Math.abs(e.movementX)>=Math.abs(e.movementY) ? 'x' : 'y') : null;
-    beginDrag(obj, e.clientX, e.clientY, axis);
-    clearTimeout(pressTimer);
-    pressTimer=setTimeout(function(){ if(drag && !drag.moved){ renameObj(obj); } }, 600);
-  });
+  svg.addEventListener('pointerdown', function(e){ var obj=pickTarget(e.target); if(!obj) return; if(!ui.edit.checked) return; e.preventDefault(); if(e.shiftKey){ renameObj(obj); return; } beginDrag(obj, e.clientX, e.clientY); clearTimeout(pressTimer); pressTimer=setTimeout(function(){ if(drag && !drag.moved){ renameObj(obj); } }, 600); });
   svg.addEventListener('dblclick', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); }});
   svg.addEventListener('contextmenu', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); }});
 
   // keyboard nudge
-  window.addEventListener('keydown', function(e){
-    if(!ui.edit.checked) return; if(!selected.id) return;
-    var obj = selected.kind==='station'? getStation(selected.id): getTalk(selected.id);
-    if(!obj) return;
-    var step = e.shiftKey ? state.grid*5 : state.grid;
-    var handled=true;
-    switch(e.key){
-      case 'ArrowLeft': obj.x -= step; break;
-      case 'ArrowRight': obj.x += step; break;
-      case 'ArrowUp': obj.y -= step; break;
-      case 'ArrowDown': obj.y += step; break;
-      case 'Enter': renameObj(obj); break;
-      default: handled=false;
-    }
-    if(handled){ e.preventDefault(); draw(); saveLocal(); }
-  });
+  window.addEventListener('keydown', function(e){ if(!ui.edit.checked) return; if(!selected.id) return; var obj = selected.kind==='station'? getStation(selected.id): getTalk(selected.id); if(!obj) return; var step = state.grid; if(e.shiftKey) step *= 5; var handled=true; switch(e.key){ case 'ArrowLeft': obj.x -= step; break; case 'ArrowRight': obj.x += step; break; case 'ArrowUp': obj.y -= step; break; case 'ArrowDown': obj.y += step; break; case 'Enter': renameObj(obj); break; default: handled=false; } if(handled){ e.preventDefault(); draw(); saveLocal(); }});
 
-  // legend (hover + isolate on click)
-  function buildLegend(){
-    legend.innerHTML='';
-    state.talks.forEach(function(t){
-      var row=document.createElement('div'); row.className='legend-item'; row.dataset.tid=t.id;
-      var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw);
-      var label=document.createElement('label');
-      var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); });
-      var span=document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label);
-      legend.appendChild(row);
-
-      row.addEventListener('mouseenter', function(){ if(!lockedHighlight) setHover(t.id); });
-      row.addEventListener('mouseleave', function(){ if(!lockedHighlight) clearHover(); });
-      row.addEventListener('click', function(){
-        lockedHighlight = (lockedHighlight===t.id) ? null : t.id;
-        updateHighlightClasses();
-      });
-    });
-    updateHighlightClasses();
-  }
+  // legend
+  function buildLegend(){ legend.innerHTML=''; state.talks.forEach(function(t){ var row=document.createElement('div'); row.className='legend-item'; row.dataset.tid=t.id; var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw); var label=document.createElement('label'); var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); }); var span=document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label); legend.appendChild(row); row.addEventListener('mouseenter', function(){ setHighlight(t.id); }); row.addEventListener('mouseleave', clearHighlight); }); }
   function toggleRoute(id, vis){ qAll('.route[data-talk="'+id+'"]').forEach(function(p){ p.classList.toggle('hidden', !vis); }); }
-  function setHover(id){ hoverHighlight=id; updateHighlightClasses(); }
-  function clearHover(){ hoverHighlight=null; updateHighlightClasses(); }
-  function updateHighlightClasses(){
-    var activeId = lockedHighlight || hoverHighlight;
-    qAll('.route').forEach(function(p){
-      if(activeId && p.dataset.talk!==activeId) p.classList.add('dim'); else p.classList.remove('dim');
-    });
-    qAll('#legend .legend-item').forEach(function(r){
-      var id=r.dataset.tid; r.classList.toggle('active', !!activeId && id===activeId);
-    });
-  }
+  function setHighlight(id){ highlighted=id; qAll('.route').forEach(function(p){ if(id && p.dataset.talk!==id) p.classList.add('dim'); else p.classList.remove('dim'); if(p.dataset.talk===id) p.classList.add('active'); else p.classList.remove('active'); }); }
+  function clearHighlight(){ setHighlight(null); }
 
   // file ops
   document.getElementById('btnReset').addEventListener('click', function(){ state=clone(DEFAULT); ui.grid.value=DEFAULT.grid; drawGrid(); draw(); saveLocal(); toast('Reset'); });
@@ -499,9 +370,9 @@
   document.getElementById('btnShare').addEventListener('click', function(){ var link=buildShareLink(); if(!link) return; if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(function(){ toast('Share link copied'); }, function(){ window.prompt('Copy link', link); }); } else { window.prompt('Copy link', link); } });
 
   // toggles
-  ui.metro.addEventListener('change', function(){ if(ui.metro.checked) ui.smooth.checked=false; draw(); saveLocal(); });
-  ui.smooth.addEventListener('change', function(){ if(ui.smooth.checked) ui.metro.checked=false; draw(); saveLocal(); });
-  ui.labels.addEventListener('change', function(){ draw(); saveLocal(); });
+  ui.metro.addEventListener('change', function(){ if(ui.metro.checked) ui.smooth.checked=false; draw(); });
+  ui.smooth.addEventListener('change', function(){ if(ui.smooth.checked) ui.metro.checked=false; draw(); });
+  ui.labels.addEventListener('change', function(){ draw(); });
   ui.grid.addEventListener('input', function(){ state.grid = Number(ui.grid.value); drawGrid(); draw(); saveLocal(); });
   ui.width.addEventListener('input', function(){ draw(); saveLocal(); });
 
@@ -509,22 +380,7 @@
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },1100); }
 
   // viewer mode via ?edit=0
-  function applyViewerMode(){
-    var params=new URLSearchParams(location.search);
-    if(params.get('edit')==='0'){
-      ui.edit.checked=false; ui.edit.disabled=true;
-      var b=document.createElement('button'); b.textContent='Enable Edit';
-      b.addEventListener('click', function(){ params.set('edit','1'); location.search='?'+params.toString(); });
-      btnRow.appendChild(b);
-    }
-  }
-
-  // mobile drawer
-  function setDrawer(open){
-    document.body.classList.toggle('drawer-open', !!open);
-  }
-  btnMenu.addEventListener('click', function(){ setDrawer(!document.body.classList.contains('drawer-open')); });
-  scrim.addEventListener('click', function(){ setDrawer(false); });
+  function applyViewerMode(){ var params=new URLSearchParams(location.search); if(params.get('edit')==='0'){ ui.edit.checked=false; ui.edit.disabled=true; var b=document.createElement('button'); b.textContent='Enable Edit'; b.addEventListener('click', function(){ params.set('edit','1'); location.search='?'+params.toString(); }); btnRow.appendChild(b); } }
 
   // init — prefer URL hash, then localStorage; auto-fit when fresh
   var loadedFromHash = loadFromHash();
