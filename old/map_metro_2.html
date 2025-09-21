@@ -90,10 +90,6 @@
     /* SVG text outline for legibility */
     .station text,.talk text{ fill:#111; stroke:#fff; stroke-width:3px; paint-order: stroke fill; pointer-events:auto; user-select:none }
 
-    /* Hide labels when the toggle is off */
-    .hideLabels .station text,
-    .hideLabels .talk text{ display:none }
-
     .hit{pointer-events:all;cursor:grab;fill-opacity:0}
     .talk rect{fill:#fff;stroke:#0f172a;stroke-width:3px;rx:18;ry:18}
     .station circle{fill:#fff;stroke:#0f172a;stroke-width:var(--node-outline)}
@@ -461,47 +457,26 @@
     if(handled){ e.preventDefault(); draw(); saveLocal(); }
   });
 
-  // legend (hover + isolate on click + keyboard)
+  // legend (hover + isolate on click)
   function buildLegend(){
     legend.innerHTML='';
     state.talks.forEach(function(t){
-      var row=document.createElement('div');
-      row.className='legend-item';
-      row.dataset.tid=t.id;
-      row.setAttribute('role','button');
-      row.setAttribute('tabindex','0');
-      row.setAttribute('aria-pressed','false');
-
-      var sw=document.createElement('div');
-      sw.className='swatch';
-      sw.style.background=t.color;
-      row.appendChild(sw);
-
+      var row=document.createElement('div'); row.className='legend-item'; row.dataset.tid=t.id;
+      var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw);
       var label=document.createElement('label');
-      var cb=document.createElement('input');
-      cb.type='checkbox';
-      cb.checked=true;
-      cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); });
-
-      var span=document.createElement('span');
-      span.textContent=t.label;
-
-      label.appendChild(cb);
-      label.appendChild(span);
-      row.appendChild(label);
+      var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); });
+      var span=document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label);
       legend.appendChild(row);
 
-      row.addEventListener('mouseenter', function(){ if(!lockedHighlight){ setHover(t.id); } });
-      row.addEventListener('mouseleave', function(){ if(!lockedHighlight){ clearHover(); } });
+      row.addEventListener('mouseenter', function(){ if(!lockedHighlight) setHover(t.id); });
+      row.addEventListener('mouseleave', function(){ if(!lockedHighlight) clearHover(); });
       row.addEventListener('click', function(){
         lockedHighlight = (lockedHighlight===t.id) ? null : t.id;
         updateHighlightClasses();
       });
-      row.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); row.click(); }});
     });
     updateHighlightClasses();
   }
-
   function toggleRoute(id, vis){ qAll('.route[data-talk="'+id+'"]').forEach(function(p){ p.classList.toggle('hidden', !vis); }); }
   function setHover(id){ hoverHighlight=id; updateHighlightClasses(); }
   function clearHover(){ hoverHighlight=null; updateHighlightClasses(); }
@@ -511,9 +486,7 @@
       if(activeId && p.dataset.talk!==activeId) p.classList.add('dim'); else p.classList.remove('dim');
     });
     qAll('#legend .legend-item').forEach(function(r){
-      var id=r.dataset.tid; var isActive=!!activeId && id===activeId;
-      r.classList.toggle('active', isActive);
-      r.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      var id=r.dataset.tid; r.classList.toggle('active', !!activeId && id===activeId);
     });
   }
 
@@ -552,7 +525,6 @@
   }
   btnMenu.addEventListener('click', function(){ setDrawer(!document.body.classList.contains('drawer-open')); });
   scrim.addEventListener('click', function(){ setDrawer(false); });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.body.classList.remove('drawer-open'); }});
 
   // init — prefer URL hash, then localStorage; auto-fit when fresh
   var loadedFromHash = loadFromHash();
@@ -561,13 +533,7 @@
   drawGrid(); draw(); applyViewerMode();
   if(!loadedFromHash && !loadedLocal){ fitToContent(); }
   applyView(); saveLocal();
-
-  // Debounced resize fit (no jump while dragging)
-  var resizeTimer=null;
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(function(){ if(!drag) fitToContent(); }, 120);
-  });
+  window.addEventListener('resize', function(){ fitToContent(); });
 })();
 </script>
 </body>
