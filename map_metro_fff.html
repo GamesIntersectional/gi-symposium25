@@ -9,27 +9,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Baloo+2:wght@700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#FFF9F6;
-      --ink:#15151a;
-      --muted:#6b7280;
-      --panel:#ffffffcc;
+      /* Poster palette */
+      --bg:#FFF9F6;          /* warm paper */
+      --ink:#15151a;         /* titles */
+      --muted:#6b7280;       /* quiet text */
+      --panel:#ffffffcc;     /* glass panel */
       --shadow: 0 6px 22px rgba(0,0,0,.08);
-      --node-outline:6px;
-      --route:12px;
+      --node-outline:6px;    /* station outline */
+      --route:12px;          /* route thickness */
 
-      /* poster-aligned route colors */
-      --c-nic:#A88BFE;
-      --c-zoy:#7AD7B3;
-      --c-alex:#FFD166;
-      --c-eileen:#FF9E80;
-      --c-flo:#F8A6D9;
-      --c-laura:#FFBD73;
-      --c-sri:#7ED4C2;
-      --c-erin:#7FA8FF;
-      --c-jack:#C266FF;
-      --c-tom:#A4C8FF;
-      --c-ric:#C79A6C;
-      --c-mil:#FF7FAE;
+      /* route colors mapped to poster tones */
+      --c-nic:#A88BFE;      /* lavender purple */
+      --c-zoy:#7AD7B3;      /* mint green */
+      --c-alex:#FFD166;     /* butter yellow */
+      --c-eileen:#FF9E80;   /* peach */
+      --c-flo:#F8A6D9;      /* bubble‑gum pink */
+      --c-laura:#FFBD73;    /* apricot ribbon */
+      --c-sri:#7ED4C2;      /* seafoam */
+      --c-erin:#7FA8FF;     /* cornflower blue */
+      --c-jack:#C266FF;     /* bright violet */
+      --c-tom:#A4C8FF;      /* light sky blue */
+      --c-ric:#C79A6C;      /* tan brown */
+      --c-mil:#FF7FAE;      /* rose */
     }
 
     html,body{height:100%}
@@ -88,30 +89,16 @@
 
     /* SVG text outline for legibility */
     .station text,.talk text{ fill:#111; stroke:#fff; stroke-width:3px; paint-order: stroke fill; pointer-events:auto; user-select:none }
-    .station text{ font-weight:600 }
-
-    /* label background pill */
-    .station .label-bg{ fill:#fff; fill-opacity:.92; pointer-events:none }
 
     /* Hide labels when the toggle is off */
     .hideLabels .station text,
     .hideLabels .talk text{ display:none }
 
     .hit{pointer-events:all;cursor:grab;fill-opacity:0}
-    .talk rect{
-      fill:#fff;
-      stroke-width:3px;
-      rx:18; ry:18;
-      pointer-events:none; /* let hits catch events */
-    }
-    .station circle{stroke:#0f172a;stroke-width:var(--node-outline)}
+    .talk rect{fill:#fff;stroke-width:3px;rx:18;ry:18;pointer-events:none}
+    .station circle{fill:#fff;stroke:#0f172a;stroke-width:var(--node-outline)}
     .station circle.sel{stroke:#111;stroke-width:5px}
     .talk rect.sel{stroke-width:4px}
-
-    /* When a route is active, fade unrelated stations */
-    .station.dim text,
-    .station.dim circle,
-    .station.dim .label-bg{ opacity:.22 }
 
     #legend{max-height:240px; overflow:auto; padding-right:6px}
 
@@ -202,14 +189,13 @@
         <button id="zOut" aria-label="Zoom out">−</button>
         <button id="zIn" aria-label="Zoom in">+</button>
       </div>
-      <div class="toast" id="toast" aria-live="polite">Saved</div>
+      <div class="toast" id="toast">Saved</div>
     </main>
   </div>
   <div class="scrim" id="scrim"></div>
 
 <script>
-// Clean build with: auto-fit, viewer mode (?edit=0), legend isolate/hover, talk-hover highlight, keyboard nudge,
-// mobile drawer, colored talk outlines, station label pills, and station-dimming for unrelated nodes.
+// Enhanced: auto-fit, viewer mode (?edit=0), legend isolate/hover, keyboard nudge, mobile drawer
 (function(){
   'use strict';
   var svg = document.getElementById('svg');
@@ -238,7 +224,6 @@
     flo: css('--c-flo'), laura: css('--c-laura'), srikkanth: css('--c-sri'), erin: css('--c-erin'),
     jack: css('--c-jack'), tom: css('--c-tom'), ricardo: css('--c-ric'), milica: css('--c-mil')
   };
-  var STATION_COLORS = [COLORS.nic, COLORS.zoyander, COLORS.alex, COLORS.eileen, COLORS.flo, COLORS.laura, COLORS.srikkanth, COLORS.erin, COLORS.jack, COLORS.tom, COLORS.ricardo, COLORS.mil];
 
   var DEFAULT = {
     grid: 20,
@@ -313,7 +298,10 @@
   function qAll(sel){ return Array.from(document.querySelectorAll(sel)); }
   function getStation(id){ return state.stations.find(function(s){ return s.id===id; }); }
   function getTalk(id){ return state.talks.find(function(t){ return t.id===id; }); }
-  function snapValue(n){ return ui.snap.checked ? Math.round(n/state.grid)*state.grid : n; }
+  function snapValue(n){
+    if(!ui.snap.checked) return n;
+    return Math.round(n/state.grid)*state.grid;
+  }
   function talkExitPoint(t){
     if(t.align==='left') return {x:t.x+t.w, y:t.y};
     if(t.align==='right') return {x:t.x-t.w, y:t.y};
@@ -371,6 +359,8 @@
       var d = ui.metro.checked ? pathMetro(pts) : pathSmooth(pts);
       var p = el('path',{d:d,'class':'route',stroke:color,'stroke-width':getComputedStyle(document.documentElement).getPropertyValue('--route')});
       p.dataset.talk=r.talk;
+      var activeId = lockedHighlight || hoverHighlight;
+      if(activeId && activeId!==r.talk) p.classList.add('dim');
       p.addEventListener('pointerenter', function(){ if(!lockedHighlight) setHover(r.talk); });
       p.addEventListener('pointerleave', function(){ if(!lockedHighlight) clearHover(); });
       gRoutes.appendChild(p);
@@ -378,13 +368,12 @@
 
     // stations
     gStations.innerHTML='';
-    state.stations.forEach(function(s, i){
+    state.stations.forEach(function(s){
       var g = el('g',{'class':'station','data-id':s.id});
       var hit = el('circle',{cx:s.x, cy:s.y, r:22, fill:'transparent', 'class':'hit','data-kind':'station','data-id':s.id});
       var c = el('circle',{cx:s.x, cy:s.y, r:10}); if(selected.kind==='station' && selected.id===s.id) c.classList.add('sel');
-      c.setAttribute('fill', STATION_COLORS[i % STATION_COLORS.length]);
-      var label = el('text',{x:s.x+16,y:s.y+2,'data-kind':'station','data-id':s.id,'class':'label'}); label.textContent=s.label;
-      g.appendChild(hit); g.appendChild(c); g.appendChild(label); gStations.appendChild(g);
+      var t = el('text',{x:s.x+16,y:s.y+2,'data-kind':'station','data-id':s.id}); t.textContent=s.label;
+      g.appendChild(hit); g.appendChild(c); g.appendChild(t); gStations.appendChild(g);
     });
 
     // talks
@@ -394,42 +383,20 @@
       var x = t.align==='left'? t.x : (t.align==='right'? (t.x-t.w) : (t.x - t.w/2));
       var y = t.y - t.h/2;
       var hit = el('rect',{x:x-8, y:y-8, width:t.w+16, height:t.h+16, fill:'transparent', 'class':'hit','data-kind':'talk','data-id':t.id});
-      var r = el('rect',{x:x, y:y, width:t.w, height:t.h, rx:18, ry:18}); r.setAttribute('stroke', t.color);
-      if(selected.kind==='talk' && selected.id===t.id) r.classList.add('sel');
+      var r = el('rect',{x:x, y:y, width:t.w, height:t.h, stroke:t.color}); if(selected.kind==='talk' && selected.id===t.id) r.classList.add('sel');
       var label = el('text',{x:x+12,y:t.y+4,'data-kind':'talk','data-id':t.id}); label.textContent=t.label;
       g.appendChild(hit); g.appendChild(r); g.appendChild(label); gTalks.appendChild(g);
-
-      // talk hover highlights its route
-      g.addEventListener('pointerenter', function(){ if(!lockedHighlight){ setHover(t.id); } });
-      g.addEventListener('pointerleave', function(){ if(!lockedHighlight){ clearHover(); } });
     });
 
     buildLegend();
-    if(stage){ stage.classList.toggle('hideLabels', !ui.labels.checked); }
-
-    // add label backgrounds after nodes are in the DOM
-    requestAnimationFrame(addStationLabelBackgrounds);
-  }
-
-  function addStationLabelBackgrounds(){
-    // remove existing
-    qAll('#stations .label-bg').forEach(function(n){ n.parentNode && n.parentNode.removeChild(n); });
-    qAll('#stations g.station').forEach(function(g){
-      var label = g.querySelector('text.label');
-      if(!label) return;
-      try{
-        var bb = label.getBBox();
-        var bg = el('rect',{x:bb.x-6, y:bb.y-3, width:bb.width+12, height:bb.height+6, rx:6, ry:6, 'class':'label-bg'});
-        g.insertBefore(bg, label);
-      }catch(e){ /* skip if not rendered yet */ }
-    });
+    if(stage){ if(ui.labels.checked){ stage.classList.remove('hideLabels'); } else { stage.classList.add('hideLabels'); } }
   }
 
   // paths
   function pathSmooth(points){ if(points.length<2) return ''; var p = points.map(function(pt){ return {x:pt.x,y:pt.y}; }); var d='M '+p[0].x+' '+p[0].y; for(var i=0;i<p.length-1;i++){ var p0=p[i-1]||p[i]; var p1=p[i]; var p2=p[i+1]; var p3=p[i+2]||p2; var t=0.25; var cp1x=p1.x+(p2.x-p0.x)*t, cp1y=p1.y+(p2.y-p0.y)*t; var cp2x=p2.x-(p3.x-p1.x)*t, cp2y=p2.y-(p3.y-p1.y)*t; d+=' C '+cp1x+' '+cp1y+', '+cp2x+' '+cp2y+', '+p2.x+' '+p2.y; } return d; }
   function pathMetro(points){ if(points.length<2) return ''; var pts=points.map(function(p){ return {x:snapValue(p.x), y:snapValue(p.y)}; }); var d='M '+pts[0].x+' '+pts[0].y; for(var i=0;i<pts.length-1;i++){ var a=pts[i], b=pts[i+1], mid={x:b.x,y:a.y}; d+=' L '+mid.x+' '+mid.y+' L '+b.x+' '+b.y; } return d; }
 
-  // drag/select/rename
+  // delegated interactivity
   var drag=null, pressTimer=null;
   function beginDrag(obj, clientX, clientY, axisLock){
     var p=svgPointFrom(clientX, clientY);
@@ -442,26 +409,26 @@
     var p=svgPointFrom(e.clientX,e.clientY);
     var dx=p.x-drag.sx, dy=p.y-drag.sy;
     if(!drag.moved && Math.abs(dx)+Math.abs(dy)>2) drag.moved=true;
+
+    // axis lock with Shift
     if(drag.axis==='x') dy=0;
     if(drag.axis==='y') dx=0;
+
     var nx = drag.ox + dx;
     var ny = drag.oy + dy;
+
+    // Alt bypasses snap
     var snappedX = e.altKey ? nx : snapValue(nx);
     var snappedY = e.altKey ? ny : snapValue(ny);
-    drag.obj.x = snappedX; drag.obj.y = snappedY; draw();
+
+    drag.obj.x = snappedX;
+    drag.obj.y = snappedY;
+    draw();
   }
   function endDrag(){ window.clearTimeout(pressTimer); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', endDrag); drag=null; saveLocal(); }
 
   function renameObj(obj){ if(!ui.edit.checked) return; var v=window.prompt('Rename', obj.label||''); if(v!==null){ v=String(v).trim(); if(v){ obj.label=v; draw(); saveLocal(); } } }
-  function pickTarget(el){
-    var kind=el.getAttribute('data-kind');
-    var id=el.getAttribute('data-id');
-    if(!kind||!id) return null;
-    selected={kind:kind,id:id};
-    if(kind==='talk'){ lockedHighlight=id; }
-    draw();
-    return (kind==='station')? getStation(id) : getTalk(id);
-  }
+  function pickTarget(el){ var kind=el.getAttribute('data-kind'); var id=el.getAttribute('data-id'); if(!kind||!id) return null; selected={kind:kind,id:id}; draw(); return (kind==='station')? getStation(id) : getTalk(id); }
 
   svg.addEventListener('pointerdown', function(e){
     var obj=pickTarget(e.target); if(!obj) return;
@@ -505,17 +472,31 @@
       row.setAttribute('tabindex','0');
       row.setAttribute('aria-pressed','false');
 
-      var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw);
+      var sw=document.createElement('div');
+      sw.className='swatch';
+      sw.style.background=t.color;
+      row.appendChild(sw);
 
       var label=document.createElement('label');
-      var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); });
-      var span=document.createElement('span'); span.textContent=t.label;
-      label.appendChild(cb); label.appendChild(span); row.appendChild(label);
+      var cb=document.createElement('input');
+      cb.type='checkbox';
+      cb.checked=true;
+      cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); });
+
+      var span=document.createElement('span');
+      span.textContent=t.label;
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      row.appendChild(label);
       legend.appendChild(row);
 
       row.addEventListener('mouseenter', function(){ if(!lockedHighlight){ setHover(t.id); } });
       row.addEventListener('mouseleave', function(){ if(!lockedHighlight){ clearHover(); } });
-      row.addEventListener('click', function(){ lockedHighlight = (lockedHighlight===t.id) ? null : t.id; updateHighlightClasses(); });
+      row.addEventListener('click', function(){
+        lockedHighlight = (lockedHighlight===t.id) ? null : t.id;
+        updateHighlightClasses();
+      });
       row.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); row.click(); }});
     });
     updateHighlightClasses();
@@ -526,24 +507,11 @@
   function clearHover(){ hoverHighlight=null; updateHighlightClasses(); }
   function updateHighlightClasses(){
     var activeId = lockedHighlight || hoverHighlight;
-    // routes dim
     qAll('.route').forEach(function(p){
-      p.classList.toggle('dim', !!activeId && p.dataset.talk!==activeId);
+      if(activeId && p.dataset.talk!==activeId) p.classList.add('dim'); else p.classList.remove('dim');
     });
-    // stations: only connected to active route stay bright
-    var connected = null;
-    if(activeId){
-      var r = state.routes.find(function(rr){ return rr.talk === activeId; });
-      if(r) connected = new Set(r.through);
-    }
-    qAll('#stations > g.station').forEach(function(g){
-      var id = g.getAttribute('data-id');
-      var shouldDim = !!connected && !connected.has(id);
-      g.classList.toggle('dim', shouldDim);
-    });
-    // legend state
     qAll('#legend .legend-item').forEach(function(r){
-      var isActive = !!activeId && r.dataset.tid===activeId;
+      var id=r.dataset.tid; var isActive=!!activeId && id===activeId;
       r.classList.toggle('active', isActive);
       r.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
@@ -579,7 +547,9 @@
   }
 
   // mobile drawer
-  function setDrawer(open){ document.body.classList.toggle('drawer-open', !!open); }
+  function setDrawer(open){
+    document.body.classList.toggle('drawer-open', !!open);
+  }
   btnMenu.addEventListener('click', function(){ setDrawer(!document.body.classList.contains('drawer-open')); });
   scrim.addEventListener('click', function(){ setDrawer(false); });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.body.classList.remove('drawer-open'); }});
