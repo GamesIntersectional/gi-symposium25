@@ -80,17 +80,11 @@
     .route{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:stroke}
     .route:hover{filter: drop-shadow(0 0 0.8px currentColor)}
     .route.hidden{opacity:.12}
-    .route.dim{opacity:.15}
-    .route.active{opacity:1}
 
     .station text,.talk text{user-select:none; pointer-events:auto}
     .hit{pointer-events:all;cursor:grab;fill-opacity:0}
     .talk rect{fill:#fff;stroke:#0f172a;stroke-width:3px;rx:18;ry:18}
     .station circle{fill:#fff;stroke:#0f172a;stroke-width:var(--node-outline)}
-    .station circle.sel{stroke:#111;stroke-width:5px}
-    .talk rect.sel{stroke:#111;stroke-width:4px}
-
-    #legend{max-height:240px; overflow:auto; padding-right:6px}
 
     .zoom{position:absolute;right:14px;bottom:14px;display:flex;gap:8px;z-index:3}
     .zoom button{width:40px;height:40px;border-radius:12px;font-size:18px}
@@ -167,7 +161,7 @@
   </div>
 
 <script>
-// Enhanced: auto-fit, viewer mode (?edit=0), legend hover highlight, keyboard nudge
+// Clean, Chrome‑safe build — drag + rename + autosave + share‑link
 (function(){
   'use strict';
   var svg = document.getElementById('svg');
@@ -177,7 +171,6 @@
   var gStations = document.getElementById('stations');
   var gTalks = document.getElementById('talks');
   var legend = document.getElementById('legend');
-  var btnRow = document.querySelector('.btn-row');
 
   var ui = {
     edit: document.getElementById('editMode'),
@@ -246,14 +239,14 @@
 
   var state = clone(DEFAULT);
 
-  // === local persistence + share links
+  // === local persistence + share links ===
   var STORAGE_KEY='gi_symposium_map_state_v1';
   function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
   function loadLocal(){ try{ var s=localStorage.getItem(STORAGE_KEY); if(s){ state=JSON.parse(s); return true; } }catch(e){} return false; }
   function loadFromHash(){ try{ if(location.hash && location.hash.indexOf('#state=')===0){ var raw = decodeURIComponent(location.hash.slice(7)); state=JSON.parse(raw); location.hash=''; return true; } }catch(e){} return false; }
   function buildShareLink(){ try{ return location.origin+location.pathname+'#state='+encodeURIComponent(JSON.stringify(state)); }catch(e){ return ''; } }
 
-  // helpers
+  // ==== helpers ====
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
   function qAll(sel){ return Array.from(document.querySelectorAll(sel)); }
@@ -264,30 +257,7 @@
   function el(name, attrs){ var n=document.createElementNS('http://www.w3.org/2000/svg', name); if(attrs){ for(var k in attrs){ if(Object.prototype.hasOwnProperty.call(attrs,k)){ n.setAttribute(k, String(attrs[k])); } } } return n; }
   function svgPointFrom(x,y){ var pt=svg.createSVGPoint(); pt.x=x; pt.y=y; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
 
-  // view / fit
-  var view={x:0,y:0,w:1600,h:1000};
-  function applyView(){ svg.setAttribute('viewBox', view.x+' '+view.y+' '+view.w+' '+view.h); }
-  function fitToContent(){
-    try{
-      var boxes=[gRoutes,gStations,gTalks].map(function(g){ return g.getBBox(); });
-      var minX=boxes.reduce(function(m,b){return Math.min(m,b.x);}, Infinity);
-      var minY=boxes.reduce(function(m,b){return Math.min(m,b.y);}, Infinity);
-      var maxX=boxes.reduce(function(m,b){return Math.max(m,b.x+b.width);}, -Infinity);
-      var maxY=boxes.reduce(function(m,b){return Math.max(m,b.y+b.height);}, -Infinity);
-      var pad=60; var w=maxX-minX, h=maxY-minY; if(!isFinite(w)||!isFinite(h)||w<=0||h<=0){ view={x:0,y:0,w:1600,h:1000}; applyView(); return; }
-      view={x:minX-pad,y:minY-pad,w:w+pad*2,h:h+pad*2}; applyView();
-    }catch(e){ view={x:0,y:0,w:1600,h:1000}; applyView(); }
-  }
-
-  document.getElementById('zIn').addEventListener('click', function(){ zoom(0.85); });
-  document.getElementById('zOut').addEventListener('click', function(){ zoom(1.15); });
-  function zoom(f){ var cx=view.x+view.w/2, cy=view.y+view.h/2; view.w*=f; view.h*=f; view.x=cx-view.w/2; view.y=cy-view.h/2; applyView(); }
-  document.getElementById('btnFit').addEventListener('click', fitToContent);
-
-  // draw
-  var selected={kind:null,id:null};
-  var highlighted=null;
-
+  // ==== draw ====
   function drawGrid(){ gGrid.innerHTML=''; var step=state.grid; var x,y; for(x=0;x<=1600;x+=step){ gGrid.appendChild(el('line',{x1:x,y1:0,x2:x,y2:1000,'class':'grid'})); } for(y=0;y<=1000;y+=step){ gGrid.appendChild(el('line',{x1:0,y1:y,x2:1600,y2:y,'class':'grid'})); } }
 
   function draw(){
@@ -300,8 +270,7 @@
       var pts=[ talkExitPoint(t) ].concat(r.through.map(getStation).map(function(s){ return {x:s.x,y:s.y}; }));
       var d = ui.metro.checked ? pathMetro(pts) : pathSmooth(pts);
       var p = el('path',{d:d,'class':'route',stroke:color,'stroke-width':getComputedStyle(document.documentElement).getPropertyValue('--route')});
-      p.dataset.talk=r.talk; if(highlighted && highlighted!==r.talk) p.classList.add('dim');
-      gRoutes.appendChild(p);
+      p.dataset.talk=r.talk; gRoutes.appendChild(p);
     });
 
     // stations
@@ -309,7 +278,7 @@
     state.stations.forEach(function(s){
       var g = el('g',{'class':'station','data-id':s.id});
       var hit = el('circle',{cx:s.x, cy:s.y, r:22, fill:'transparent', 'class':'hit','data-kind':'station','data-id':s.id});
-      var c = el('circle',{cx:s.x, cy:s.y, r:10}); if(selected.kind==='station' && selected.id===s.id) c.classList.add('sel');
+      var c = el('circle',{cx:s.x, cy:s.y, r:10});
       var t = el('text',{x:s.x+16,y:s.y+2,'data-kind':'station','data-id':s.id}); t.textContent=s.label;
       g.appendChild(hit); g.appendChild(c); g.appendChild(t); gStations.appendChild(g);
     });
@@ -321,45 +290,44 @@
       var x = t.align==='left'? t.x : (t.align==='right'? (t.x-t.w) : (t.x - t.w/2));
       var y = t.y - t.h/2;
       var hit = el('rect',{x:x-8, y:y-8, width:t.w+16, height:t.h+16, fill:'transparent', 'class':'hit','data-kind':'talk','data-id':t.id});
-      var r = el('rect',{x:x, y:y, width:t.w, height:t.h, stroke:t.color}); if(selected.kind==='talk' && selected.id===t.id) r.classList.add('sel');
+      var r = el('rect',{x:x, y:y, width:t.w, height:t.h, stroke:t.color});
       var label = el('text',{x:x+12,y:t.y+4,'data-kind':'talk','data-id':t.id}); label.textContent=t.label;
       g.appendChild(hit); g.appendChild(r); g.appendChild(label); gTalks.appendChild(g);
-    });
-
-    // route hover highlight
-    qAll('.route').forEach(function(p){
-      p.addEventListener('pointerenter', function(){ setHighlight(p.dataset.talk); });
-      p.addEventListener('pointerleave', function(){ clearHighlight(); });
     });
 
     buildLegend();
     if(stage){ if(ui.labels.checked){ stage.classList.remove('hideLabels'); } else { stage.classList.add('hideLabels'); } }
   }
 
-  // paths
+  // ==== paths ====
   function pathSmooth(points){ if(points.length<2) return ''; var p = points.map(function(pt){ return {x:pt.x,y:pt.y}; }); var d='M '+p[0].x+' '+p[0].y; for(var i=0;i<p.length-1;i++){ var p0=p[i-1]||p[i]; var p1=p[i]; var p2=p[i+1]; var p3=p[i+2]||p2; var t=0.25; var cp1x=p1.x+(p2.x-p0.x)*t, cp1y=p1.y+(p2.y-p0.y)*t; var cp2x=p2.x-(p3.x-p1.x)*t, cp2y=p2.y-(p3.y-p1.y)*t; d+=' C '+cp1x+' '+cp1y+', '+cp2x+' '+cp2y+', '+p2.x+' '+p2.y; } return d; }
   function pathMetro(points){ if(points.length<2) return ''; var pts=points.map(function(p){ return {x:snapValue(p.x), y:snapValue(p.y)}; }); var d='M '+pts[0].x+' '+pts[0].y; for(var i=0;i<pts.length-1;i++){ var a=pts[i], b=pts[i+1], mid={x:b.x,y:a.y}; d+=' L '+mid.x+' '+mid.y+' L '+b.x+' '+b.y; } return d; }
 
-  // delegated interactivity
+  // ==== delegated interactivity ====
   var drag=null, pressTimer=null;
+
   function beginDrag(obj, clientX, clientY){ var p=svgPointFrom(clientX, clientY); drag={obj:obj, sx:p.x, sy:p.y, ox:obj.x, oy:obj.y, moved:false}; window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', endDrag); }
   function onMove(e){ if(!drag) return; var p=svgPointFrom(e.clientX,e.clientY); var dx=p.x-drag.sx, dy=p.y-drag.sy; if(Math.abs(dx)>2||Math.abs(dy)>2) drag.moved=true; drag.obj.x=snapValue(drag.ox+dx); drag.obj.y=snapValue(drag.oy+dy); draw(); }
   function endDrag(){ window.clearTimeout(pressTimer); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', endDrag); drag=null; saveLocal(); }
+
   function renameObj(obj){ if(!ui.edit.checked) return; var v=window.prompt('Rename', obj.label||''); if(v!==null){ v=String(v).trim(); if(v){ obj.label=v; draw(); saveLocal(); } } }
-  function pickTarget(el){ var kind=el.getAttribute('data-kind'); var id=el.getAttribute('data-id'); if(!kind||!id) return null; selected={kind:kind,id:id}; draw(); return (kind==='station')? getStation(id) : getTalk(id); }
+  function pickTarget(el){ var kind=el.getAttribute('data-kind'); var id=el.getAttribute('data-id'); if(!kind||!id) return null; return (kind==='station')? getStation(id) : getTalk(id); }
 
-  svg.addEventListener('pointerdown', function(e){ var obj=pickTarget(e.target); if(!obj) return; if(!ui.edit.checked) return; e.preventDefault(); if(e.shiftKey){ renameObj(obj); return; } beginDrag(obj, e.clientX, e.clientY); clearTimeout(pressTimer); pressTimer=setTimeout(function(){ if(drag && !drag.moved){ renameObj(obj); } }, 600); });
-  svg.addEventListener('dblclick', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); }});
-  svg.addEventListener('contextmenu', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); }});
-
-  // keyboard nudge
-  window.addEventListener('keydown', function(e){ if(!ui.edit.checked) return; if(!selected.id) return; var obj = selected.kind==='station'? getStation(selected.id): getTalk(selected.id); if(!obj) return; var step = state.grid; if(e.shiftKey) step *= 5; var handled=true; switch(e.key){ case 'ArrowLeft': obj.x -= step; break; case 'ArrowRight': obj.x += step; break; case 'ArrowUp': obj.y -= step; break; case 'ArrowDown': obj.y += step; break; case 'Enter': renameObj(obj); break; default: handled=false; } if(handled){ e.preventDefault(); draw(); saveLocal(); }});
+  svg.addEventListener('pointerdown', function(e){ if(!ui.edit.checked) return; var obj=pickTarget(e.target); if(!obj) return; e.preventDefault(); if(e.shiftKey){ renameObj(obj); return; } beginDrag(obj, e.clientX, e.clientY); clearTimeout(pressTimer); pressTimer=setTimeout(function(){ if(drag && !drag.moved){ renameObj(obj); } }, 600); });
+  svg.addEventListener('dblclick', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); } });
+  svg.addEventListener('contextmenu', function(e){ var obj=pickTarget(e.target); if(obj){ e.preventDefault(); renameObj(obj); } });
 
   // legend
-  function buildLegend(){ legend.innerHTML=''; state.talks.forEach(function(t){ var row=document.createElement('div'); row.className='legend-item'; row.dataset.tid=t.id; var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw); var label=document.createElement('label'); var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); }); var span=document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label); legend.appendChild(row); row.addEventListener('mouseenter', function(){ setHighlight(t.id); }); row.addEventListener('mouseleave', clearHighlight); }); }
+  function buildLegend(){ legend.innerHTML=''; state.talks.forEach(function(t){ var row=document.createElement('div'); row.className='legend-item'; var sw=document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw); var label=document.createElement('label'); var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change', function(){ toggleRoute(t.id, cb.checked); }); var span=document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label); legend.appendChild(row); }); }
   function toggleRoute(id, vis){ qAll('.route[data-talk="'+id+'"]').forEach(function(p){ p.classList.toggle('hidden', !vis); }); }
-  function setHighlight(id){ highlighted=id; qAll('.route').forEach(function(p){ if(id && p.dataset.talk!==id) p.classList.add('dim'); else p.classList.remove('dim'); if(p.dataset.talk===id) p.classList.add('active'); else p.classList.remove('active'); }); }
-  function clearHighlight(){ setHighlight(null); }
+
+  // zoom
+  var view={x:0,y:0,w:1600,h:1000};
+  function applyView(){ svg.setAttribute('viewBox', view.x+' '+view.y+' '+view.w+' '+view.h); }
+  document.getElementById('zIn').addEventListener('click', function(){ zoom(0.85); });
+  document.getElementById('zOut').addEventListener('click', function(){ zoom(1.15); });
+  function zoom(f){ var cx=view.x+view.w/2, cy=view.y+view.h/2; view.w*=f; view.h*=f; view.x=cx-view.w/2; view.y=cy-view.h/2; applyView(); }
+  document.getElementById('btnFit').addEventListener('click', function(){ view={x:0,y:0,w:1600,h:1000}; applyView(); });
 
   // file ops
   document.getElementById('btnReset').addEventListener('click', function(){ state=clone(DEFAULT); ui.grid.value=DEFAULT.grid; drawGrid(); draw(); saveLocal(); toast('Reset'); });
@@ -379,17 +347,10 @@
   function download(blob, name){ var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); },4000); }
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },1100); }
 
-  // viewer mode via ?edit=0
-  function applyViewerMode(){ var params=new URLSearchParams(location.search); if(params.get('edit')==='0'){ ui.edit.checked=false; ui.edit.disabled=true; var b=document.createElement('button'); b.textContent='Enable Edit'; b.addEventListener('click', function(){ params.set('edit','1'); location.search='?'+params.toString(); }); btnRow.appendChild(b); } }
-
-  // init — prefer URL hash, then localStorage; auto-fit when fresh
-  var loadedFromHash = loadFromHash();
-  var loadedLocal = !loadedFromHash && loadLocal();
+  // init — prefer URL hash, then localStorage
+  if(!loadFromHash()) loadLocal();
   if(state.grid) ui.grid.value = state.grid;
-  drawGrid(); draw(); applyViewerMode();
-  if(!loadedFromHash && !loadedLocal){ fitToContent(); }
-  applyView(); saveLocal();
-  window.addEventListener('resize', function(){ fitToContent(); });
+  drawGrid(); draw(); applyView(); saveLocal();
 })();
 </script>
 </body>
