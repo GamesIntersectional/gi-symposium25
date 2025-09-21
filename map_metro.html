@@ -130,6 +130,12 @@
     /* Route edit affordance */
     body.route-edit .station .hit{ cursor:pointer }
     body.route-edit #stage{ cursor:crosshair }
+    
+    /* Add modes */
+    body.add-station #stage, body.add-talk #stage{ cursor: crosshair }
+    body.add-station .station .hit{ cursor: crosshair }
+    body.add-talk .talk .hit{ cursor: crosshair }
+    
     /* Mobile drawer */
     .scrim{position:fixed; inset:54px 0 0 0; background:rgba(0,0,0,.08); opacity:0; pointer-events:none; transition:.2s; z-index:4}
     @media (max-width: 900px){
@@ -173,6 +179,10 @@
           <label><input id="smooth" type="checkbox"/> Smooth curves</label>
           <label><input id="labels" type="checkbox" checked/> Station labels</label>
           <label><input id="routeEdit" type="checkbox"/> Route edit</label>
+          <div class="btn-row" style="margin-top:6px">
+            <button id="btnAddStation" type="button">Add station</button>
+            <button id="btnAddTalk" type="button">Add talk</button>
+          </div>
         </div>
         <div class="sep"></div>
         <div class="controls">
@@ -245,6 +255,7 @@
     jack: css('--c-jack'), tom: css('--c-tom'), ricardo: css('--c-ric'), milica: css('--c-mil')
   };
   var STATION_COLORS = [COLORS.nic, COLORS.zoyander, COLORS.alex, COLORS.eileen, COLORS.flo, COLORS.laura, COLORS.srikkanth, COLORS.erin, COLORS.jack, COLORS.tom, COLORS.ricardo, COLORS.mil];
+  var TALK_COLORS = STATION_COLORS.slice();
 
   var DEFAULT = {
     grid: 20,
@@ -349,6 +360,10 @@
     return n;
   }
   function svgPointFrom(x,y){ var pt=svg.createSVGPoint(); pt.x=x; pt.y=y; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+  function slugify(s){ return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+  function uniqueId(base, existing){ var id=base||'id'; var i=2; var set=new Set(existing); while(set.has(id)){ id=base+'-'+i++; } return id; }
+  var addingStation=false, addingTalk=false, nextTalkColor=0;
+
 
   // view / fit
   var view={x:0,y:0,w:1600,h:1000};
@@ -486,7 +501,52 @@
     return (kind==='station')? getStation(id) : getTalk(id);
   }
 
+  
   svg.addEventListener('pointerdown', function(e){
+    var p = svgPointFrom(e.clientX, e.clientY);
+
+    // Add Station mode
+    if(addingStation){
+      var label = window.prompt('New station name:');
+      if(label && label.trim()){
+        var idBase = slugify(label);
+        var ids = state.stations.map(function(s){return s.id;});
+        var id = uniqueId(idBase, ids);
+        var s = {id:id, label:label.trim(), x:snapValue(p.x), y:snapValue(p.y)};
+        state.stations.push(s);
+        addingStation=false; document.body.classList.remove('add-station');
+        selected={kind:'station', id:id};
+        draw(); saveLocal(); toast('Station added');
+      } else {
+        addingStation=false; document.body.classList.remove('add-station');
+      }
+      return;
+    }
+
+    // Add Talk mode
+    if(addingTalk){
+      var title = window.prompt('New talk title:');
+      if(title && title.trim()){
+        var idBase = slugify(title);
+        var ids = state.talks.map(function(t){return t.id;});
+        var id = uniqueId(idBase, ids);
+        var color = TALK_COLORS[nextTalkColor++ % TALK_COLORS.length];
+        var w = 360, h = 50;
+        var x = snapValue(p.x - w/2);
+        var y = snapValue(p.y);
+        var t = {id:id, label:title.trim(), x:x, y:y, w:w, h:h, align:'left', color:color};
+        state.talks.push(t);
+        state.routes.push({talk:id, through:[]});
+        addingTalk=false; document.body.classList.remove('add-talk');
+        selected={kind:'talk', id:id}; lockedHighlight=id;
+        if(ui.routeEdit) { ui.routeEdit.checked = true; document.body.classList.add('route-edit'); }
+        draw(); saveLocal(); toast('Talk added — Ctrl/⌘‑click stations to connect');
+      } else {
+        addingTalk=false; document.body.classList.remove('add-talk');
+      }
+      return;
+    }
+
     var target = e.target;
     var kind = target.getAttribute && target.getAttribute('data-kind');
     var id = target.getAttribute && target.getAttribute('data-id');
@@ -598,6 +658,14 @@
   ui.labels.addEventListener('change', function(){ draw(); saveLocal(); });
   ui.grid.addEventListener('input', function(){ state.grid = Number(ui.grid.value); drawGrid(); draw(); saveLocal(); });
   ui.width.addEventListener('input', function(){ draw(); saveLocal(); });
+  // Add station / talk
+  var btnAddStation=document.getElementById('btnAddStation');
+  var btnAddTalk=document.getElementById('btnAddTalk');
+  if(btnAddStation){ btnAddStation.addEventListener('click', function(){ addingTalk=false; addingStation=true; document.body.classList.add('add-station'); toast('Click on the map to place a station'); }); }
+  if(btnAddTalk){ btnAddTalk.addEventListener('click', function(){ addingStation=false; addingTalk=true; document.body.classList.add('add-talk'); toast('Click on the map to place the talk'); }); }
+  // route edit body class
+  if(ui.routeEdit){ ui.routeEdit.addEventListener('change', function(){ document.body.classList.toggle('route-edit', ui.routeEdit.checked); }); }
+
 
   // route edit body class
   if(ui.routeEdit){ ui.routeEdit.addEventListener('change', function(){ document.body.classList.toggle('route-edit', ui.routeEdit.checked); }); }
