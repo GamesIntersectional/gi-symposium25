@@ -112,9 +112,6 @@
     .station.dim text,
     .station.dim circle,
     .station.dim .label-bg{ opacity:.22 }
-    /* fade other talks when a route is active */
-    .talk.dim rect, .talk.dim text { opacity: .35 }
-
 
     #legend{max-height:240px; overflow:auto; padding-right:6px}
 
@@ -129,6 +126,10 @@
     input[type="file"]{display:none}
     label.file{display:inline-flex;gap:6px;align-items:center}
 
+    
+    /* Route edit affordance */
+    body.route-edit .station .hit{ cursor:pointer }
+    body.route-edit #stage{ cursor:crosshair }
     /* Mobile drawer */
     .scrim{position:fixed; inset:54px 0 0 0; background:rgba(0,0,0,.08); opacity:0; pointer-events:none; transition:.2s; z-index:4}
     @media (max-width: 900px){
@@ -171,6 +172,7 @@
           <label><input id="metro" type="checkbox" checked/> Metro lines</label>
           <label><input id="smooth" type="checkbox"/> Smooth curves</label>
           <label><input id="labels" type="checkbox" checked/> Station labels</label>
+          <label><input id="routeEdit" type="checkbox"/> Route edit</label>
         </div>
         <div class="sep"></div>
         <div class="controls">
@@ -181,7 +183,7 @@
         </div>
         <div class="sep"></div>
         <div id="legend"></div>
-        <div class="hint">Mobile: long‑press (~0.5s) on a label to rename. Hold <b>Shift</b> while dragging to lock axis; hold <b>Alt</b> to bypass snap.</div>
+        <div class="hint">Mobile: long‑press (~0.5s) on a label to rename. Hold <b>Shift</b> while dragging to lock axis; hold <b>Alt</b> to bypass snap. <br><b>Route edit:</b> select a talk, then <b>Ctrl/⌘‑click</b> stations to add/remove.</div>
       </div>
       <div class="panel">
         <h3>About</h3>
@@ -233,7 +235,8 @@
     smooth: document.getElementById('smooth'),
     labels: document.getElementById('labels'),
     grid: document.getElementById('grid'),
-    width: document.getElementById('width')
+    width: document.getElementById('width'),
+    routeEdit: document.getElementById('routeEdit')
   };
 
   var COLORS = {
@@ -316,6 +319,23 @@
   function qAll(sel){ return Array.from(document.querySelectorAll(sel)); }
   function getStation(id){ return state.stations.find(function(s){ return s.id===id; }); }
   function getTalk(id){ return state.talks.find(function(t){ return t.id===id; }); }
+  function ensureRouteForTalk(tid){
+    var r = state.routes.find(function(rr){ return rr.talk===tid; });
+    if(!r){ r = {talk:tid, through:[]}; state.routes.push(r); }
+    return r;
+  }
+  function toggleStationInRoute(tid, sid){
+    var r = ensureRouteForTalk(tid);
+    var i = r.through.indexOf(sid);
+    if(i>=0){ r.through.splice(i,1); }
+    else { 
+      // avoid duplicates, then append
+      r.through = r.through.filter(function(x){ return x!==sid; });
+      r.through.push(sid);
+    }
+    draw(); saveLocal(); updateHighlightClasses(); toast('Route updated');
+  }
+
   function snapValue(n){ return ui.snap.checked ? Math.round(n/state.grid)*state.grid : n; }
   function talkExitPoint(t){
     if(t.align==='left') return {x:t.x+t.w, y:t.y};
@@ -467,6 +487,17 @@
   }
 
   svg.addEventListener('pointerdown', function(e){
+    var target = e.target;
+    var kind = target.getAttribute && target.getAttribute('data-kind');
+    var id = target.getAttribute && target.getAttribute('data-id');
+
+    // Route edit: Ctrl/Meta + click station to toggle for selected talk
+    if (ui.routeEdit && ui.routeEdit.checked && (e.ctrlKey || e.metaKey) && kind==='station'){
+      var talkId = (selected.kind==='talk' && selected.id) ? selected.id : (lockedHighlight || null);
+      if(talkId){ toggleStationInRoute(talkId, id); }
+      e.preventDefault(); return;
+    }
+
     var obj=pickTarget(e.target);
     if(!obj){ if(lockedHighlight){ lockedHighlight=null; updateHighlightClasses(); } return; }
     if(!ui.edit.checked) return;
@@ -533,13 +564,7 @@
     // routes dim
     qAll('.route').forEach(function(p){
       p.classList.toggle('dim', !!activeId && p.dataset.talk!==activeId);
-    
-    // talks: dim non-active talk cards
-    qAll('#talks > g.talk').forEach(function(g){
-      var isActive = !!activeId && g.getAttribute('data-id') === activeId;
-      g.classList.toggle('dim', !!activeId && !isActive);
     });
-});
     // stations: only connected to active route stay bright
     var connected = null;
     if(activeId){
@@ -574,6 +599,9 @@
   ui.grid.addEventListener('input', function(){ state.grid = Number(ui.grid.value); drawGrid(); draw(); saveLocal(); });
   ui.width.addEventListener('input', function(){ draw(); saveLocal(); });
 
+  // route edit body class
+  if(ui.routeEdit){ ui.routeEdit.addEventListener('change', function(){ document.body.classList.toggle('route-edit', ui.routeEdit.checked); }); }
+
   function download(blob, name){ var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); },4000); }
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },1100); }
 
@@ -592,7 +620,7 @@
   function setDrawer(open){ document.body.classList.toggle('drawer-open', !!open); }
   btnMenu.addEventListener('click', function(){ setDrawer(!document.body.classList.contains('drawer-open')); });
   scrim.addEventListener('click', function(){ setDrawer(false); });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ lockedHighlight=null; updateHighlightClasses(); document.body.classList.remove('drawer-open'); }});
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.body.classList.remove('drawer-open'); }});
 
   // init — prefer URL hash, then localStorage; auto-fit when fresh
   var loadedFromHash = loadFromHash();
