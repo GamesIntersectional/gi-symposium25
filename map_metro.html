@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GI Symposium — Metro Map (Interactive)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+  <!-- ===== CSS (Style) ===== -->
+  <style>
+    :root{
+      /* Mini‑Metro inspired */
+      --bg:#fbfbfd;          /* paper */
+      --ink:#15151a;         /* titles */
+      --muted:#6b7280;       /* quiet text */
+      --panel:#ffffffcc;     /* glass panel */
+      --shadow: 0 6px 22px rgba(0,0,0,.08);
+      --node-outline:6px;    /* station outline */
+      --route:12px;          /* route thickness (slider can change this) */
+
+      /* route colors (poster palette) */
+      --c-nic:#8b5cf6;      /* purple */
+      --c-zoy:#22c55e;      /* green */
+      --c-alex:#f59e0b;     /* yellow */
+      --c-eileen:#f97316;   /* orange */
+      --c-flo:#a78bfa;      /* violet */
+      --c-laura:#fb923c;    /* orange‑light */
+      --c-sri:#10b981;      /* teal‑green */
+      --c-erin:#3b82f6;     /* blue */
+      --c-jack:#7c3aed;     /* deep purple */
+      --c-tom:#60a5fa;      /* light blue */
+      --c-ric:#b45309;      /* brown */
+      --c-mil:#ec4899;      /* pink */
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;color:var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(900px 600px at 10% -10%, #f6f6ff 0, transparent 60%),
+        radial-gradient(900px 600px at 110% 10%, #fff1eb 0, transparent 60%),
+        var(--bg);
+      overflow:hidden;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+
+    header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid #ececef;background:#ffffffd9;backdrop-filter: blur(8px)}
+    h1{margin:0;font:700 18px/1 'Baloo 2', Inter}
+    .sub{color:var(--muted);font-size:13px;margin-left:6px}
+
+    .wrap{display:grid;grid-template-columns: 360px 1fr; height:calc(100% - 54px)}
+
+    aside{padding:14px;border-right:1px solid #ececef;background:linear-gradient(180deg,#fff 0,#fdfbff 120%);overflow:auto}
+    .panel{background:var(--panel);border-radius:16px;padding:12px;box-shadow:var(--shadow);border:1px solid #efeff4;margin-bottom:12px}
+    .panel h3{margin:.2rem 0 .6rem;font:700 15px/1 'Baloo 2', Inter}
+
+    .legend-item{display:flex;align-items:center;gap:10px;margin:7px 0}
+    .swatch{width:28px;height:6px;border-radius:999px;background:#999;box-shadow:inset 0 0 0 1px #00000012}
+    .legend-item label{flex:1;display:flex;gap:8px;align-items:center}
+    .legend-item input[type="checkbox"]{accent-color:#111;width:16px;height:16px}
+
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px}
+    button,.btn{appearance:none;border:1px solid #e7e7ef;background:#fff;border-radius:12px;padding:8px 10px;font-weight:650;cursor:pointer;font-size:13px;box-shadow:var(--shadow);transition:transform .06s ease, background .18s ease}
+    button:hover{background:#f8f8ff}
+    button:active{transform: translateY(1px)}
+
+    .toggle{display:flex;gap:8px;flex-wrap:wrap}
+    .toggle label{display:inline-flex;gap:6px;align-items:center;border:1px solid #e7e7ef;background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;box-shadow:var(--shadow)}
+
+    .controls{display:grid;grid-template-columns: 1fr auto; gap:8px; align-items:center}
+    .controls label{font-size:12px;color:var(--muted)}
+    .controls input[type="range"]{width:100%}
+
+    #stage{position:relative;height:100%;}
+    svg{width:100%;height:100%;display:block;background:#fff}
+
+    .grid{stroke:#f2f2f7;stroke-width:1}
+
+    .route{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:stroke}
+    .route:hover{filter: drop-shadow(0 0 0.8px currentColor)}
+    .route.hidden{opacity:.12}
+
+    .station{pointer-events:all}
+    .station.draggable{cursor:grab;touch-action:none}
+    .station circle{fill:#fff;stroke:#0f172a;stroke-width:var(--node-outline)}
+    .station text{font-size:14px;dominant-baseline:middle}
+    .hideLabels .station text{display:none}
+
+    .talk{pointer-events:all}
+    .talk.draggable{cursor:grab;touch-action:none}
+    .talk rect{fill:#fff;stroke:#0f172a;stroke-width:3px;rx:18;ry:18}
+    .talk text{font-size:13px}
+
+    .zoom{position:absolute;right:14px;bottom:14px;display:flex;gap:8px;z-index:3}
+    .zoom button{width:40px;height:40px;border-radius:12px;font-size:18px}
+
+    .toast{position:absolute;bottom:12px;left:12px;background:#111;color:#fff;padding:8px 10px;border-radius:12px;font-size:12px;opacity:0;transform:translateY(6px);transition:.25s}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    .sep{height:1px;background:#efeff4;margin:10px 0}
+    .hint{color:var(--muted);font-size:12px;margin-top:4px}
+    input[type="file"]{display:none}
+    label.file{display:inline-flex;gap:6px;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>GI Symposium — Metro Map<span class="sub"> • drag to adjust • double‑click to rename</span></h1></div>
+    <div class="btn-row">
+      <button id="btnFit">Fit</button>
+      <button id="btnReset">Reset</button>
+      <button id="btnSaveJSON">Save JSON</button>
+      <label class="file btn"><input id="fileJSON" type="file" accept="application/json"/>Load JSON</label>
+      <button id="btnExportSVG">Export SVG</button>
+      <button id="btnExportPNG">Export PNG</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <aside>
+      <div class="panel">
+        <h3>View & Edit</h3>
+        <div class="toggle">
+          <label><input id="editMode" type="checkbox" checked/> Edit mode</label>
+          <label><input id="snap" type="checkbox" checked/> Snap to grid</label>
+          <label><input id="metro" type="checkbox" checked/> Metro lines</label>
+          <label><input id="smooth" type="checkbox"/> Smooth curves</label>
+          <label><input id="labels" type="checkbox" checked/> Station labels</label>
+        </div>
+        <div class="sep"></div>
+        <div class="controls">
+          <label for="grid">Grid size</label>
+          <input id="grid" type="range" min="10" max="60" step="2" value="20" />
+          <label for="width">Line width</label>
+          <input id="width" type="range" min="8" max="18" step="1" value="12" />
+        </div>
+        <div class="sep"></div>
+        <div id="legend"></div>
+        <div class="hint">Mobile: long‑press (~0.5s) on a label to rename.</div>
+      </div>
+      <div class="panel">
+        <h3>About</h3>
+        <div class="hint">Self‑contained HTML. Works offline. Save your layout as JSON and keep iterating.</div>
+      </div>
+    </aside>
+
+    <main id="stage">
+      <svg id="svg" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive metro map">
+        <defs>
+          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity=".08"/>
+          </filter>
+        </defs>
+        <!-- light grid for mini‑metro vibes -->
+        <g id="grid"></g>
+        <g id="routes" filter="url(#softShadow)"></g>
+        <g id="stations"></g>
+        <g id="talks"></g>
+      </svg>
+      <div class="zoom">
+        <button id="zOut" aria-label="Zoom out">−</button>
+        <button id="zIn" aria-label="Zoom in">+</button>
+      </div>
+      <div class="toast" id="toast">Saved</div>
+    </main>
+  </div>
+
+  <!-- ===== JavaScript (Dynamic adjustment) ===== -->
+  <script>
+  (function(){
+    const svg = document.getElementById('svg');
+    const gGrid = document.getElementById('grid');
+    const gRoutes = document.getElementById('routes');
+    const gStations = document.getElementById('stations');
+    const gTalks = document.getElementById('talks');
+    const legend = document.getElementById('legend');
+    const stage = document.getElementById('stage'); // FIX: used later for label visibility toggle
+
+    const ui = {
+      edit: document.getElementById('editMode'),
+      snap: document.getElementById('snap'),
+      metro: document.getElementById('metro'),
+      smooth: document.getElementById('smooth'),
+      labels: document.getElementById('labels'),
+      grid: document.getElementById('grid'),
+      width: document.getElementById('width')
+    };
+
+    const COLORS = {
+      nic: css('--c-nic'), zoyander: css('--c-zoy'), alex: css('--c-alex'),
+      eileen: css('--c-eileen'), flo: css('--c-flo'), laura: css('--c-laura'),
+      srikkanth: css('--c-sri'), erin: css('--c-erin'), jack: css('--c-jack'),
+      tom: css('--c-tom'), ricardo: css('--c-ric'), milica: css('--c-mil')
+    };
+
+    const DEFAULT = {
+      grid: 20,
+      stations: [
+        {id:'neuro', label:'Neurodiversity', x:800, y:140},
+        {id:'queer', label:'Queerness', x:520, y:300},
+        {id:'char', label:'Character Creators', x:600, y:360},
+        {id:'embody', label:'Embodiment', x:610, y:430},
+        {id:'perform', label:'Performance', x:560, y:500},
+        {id:'art', label:'Art', x:530, y:580},
+        {id:'demo', label:'Game Demo', x:520, y:660},
+        {id:'care', label:'Care', x:820, y:740},
+        {id:'empathy', label:'Empathy', x:780, y:660},
+        {id:'trauma', label:'Trauma', x:760, y:580},
+        {id:'gamedesign', label:'Game Design', x:900, y:520},
+        {id:'autoeth', label:'Autoethnography', x:920, y:440},
+        {id:'learn', label:'Learning / Edutainment', x:1020, y:360},
+        {id:'resist', label:'Resistance', x:1100, y:300},
+        {id:'decol', label:'Decolonisation & Social Change', x:1120, y:220}
+      ],
+      talks: [
+        {id:'nic', label:'Queering Play in The Sims 4', x:60, y:120, w:360, h:50, align:'left', color:COLORS.nic},
+        {id:'zoyander', label:'Intrapology — Performance', x:60, y:540, w:360, h:50, align:'left', color:COLORS.zoyander},
+        {id:'alex', label:'Role of (Queer) Body in Cosplay', x:60, y:260, w:360, h:50, align:'left', color:COLORS.alex},
+        {id:'eileen', label:'Customizable Character Creators', x:60, y:320, w:360, h:50, align:'left', color:COLORS.eileen},
+        {id:'flo', label:'In Other Bodies', x:60, y:380, w:360, h:50, align:'left', color:COLORS.flo},
+        {id:'laura', label:"Congratulations, You've Chosen Poorly", x:800, y:60, w:560, h:50, align:'top', color:COLORS.laura},
+        {id:'srikkanth', label:'Disruption through Strategic Game Design', x:1540, y:640, w:420, h:50, align:'right', color:COLORS.srikkanth},
+        {id:'erin', label:'Game Design Justice: Community‑led Practice', x:1540, y:700, w:420, h:50, align:'right', color:COLORS.erin},
+        {id:'jack', label:'No Diversity, No Games', x:1540, y:300, w:420, h:50, align:'right', color:COLORS.jack},
+        {id:'tom', label:'An Afternoon at Home — Playtest & Discussion', x:1540, y:380, w:420, h:50, align:'right', color:COLORS.tom},
+        {id:'ricardo', label:'Ascension Day — Game Demo', x:1540, y:460, w:420, h:50, align:'right', color:COLORS.ricardo},
+        {id:'milica', label:'Social Innovation & Video Games', x:1540, y:520, w:420, h:50, align:'right', color:COLORS.milica}
+      ],
+      routes: [
+        {talk:'nic', through:['queer','char','art','demo']},
+        {talk:'zoyander', through:['perform','art','demo']},
+        {talk:'alex', through:['queer','embody','perform']},
+        {talk:'eileen', through:['char','demo']},
+        {talk:'flo', through:['embody','art']},
+        {talk:'laura', through:['neuro','queer','empathy','trauma']},
+        {talk:'srikkanth', through:['resist','decol']},
+        {talk:'erin', through:['learn','gamedesign','care']},
+        {talk:'jack', through:['gamedesign']},
+        {talk:'tom', through:['autoeth','gamedesign']},
+        {talk:'ricardo', through:['gamedesign','care']},
+        {talk:'milica', through:['care','gamedesign']}
+      ]
+    };
+
+    let state = clone(DEFAULT);
+
+    // ===== helpers
+    function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+    function clone(o){ return JSON.parse(JSON.stringify(o)); }
+    function id(x){ return document.getElementById(x); }
+    function qAll(sel){ return Array.from(document.querySelectorAll(sel)); }
+    function getStation(id){ return state.stations.find(s=>s.id===id); }
+    function getTalk(id){ return state.talks.find(t=>t.id===id); }
+    function snapValue(n){ return ui.snap.checked ? Math.round(n/state.grid)*state.grid : n; }
+    function talkExitPoint(t){
+      const {x,y,w,h,align}=t;
+      if(align==='left') return {x:x+w, y:y};
+      if(align==='right') return {x:x-w, y:y};
+      if(align==='top') return {x:x, y:y+h/2};
+      return {x:x+w, y:y};
+    }
+
+    // ===== drawing
+    function drawGrid(){
+      gGrid.innerHTML='';
+      const step = state.grid; 
+      for(let x=0;x<=1600;x+=step){ gGrid.appendChild(line(x,0,x,1000)); }
+      for(let y=0;y<=1000;y+=step){ gGrid.appendChild(line(0,y,1600,y)); }
+      function line(x1,y1,x2,y2){ const l = el('line', {x1,y1,x2,y2, class:'grid'}); return l; }
+    }
+
+    function draw(){
+      document.documentElement.style.setProperty('--route', ui.width.value+'px');
+
+      // routes
+      gRoutes.innerHTML='';
+      for(const r of state.routes){
+        const t=getTalk(r.talk); const color=t.color; 
+        const pts=[ talkExitPoint(t), ...r.through.map(getStation).map(s=>({x:s.x,y:s.y})) ];
+        const d = ui.metro.checked ? pathMetro(pts) : pathSmooth(pts);
+        const p = el('path',{d,class:'route',stroke:color,'stroke-width':getComputedStyle(document.documentElement).getPropertyValue('--route')});
+        p.dataset.talk = r.talk; gRoutes.appendChild(p);
+      }
+
+      // stations
+      gStations.innerHTML='';
+      for(const s of state.stations){
+        const g = el('g',{class:'station draggable','data-id':s.id, style:'pointer-events:all'});
+        const c = el('circle',{cx:s.x, cy:s.y, r:10});
+        const t = el('text',{x:s.x+16,y:s.y+2}); t.textContent=s.label;
+        g.appendChild(c); g.appendChild(t); gStations.appendChild(g);
+        makeDraggable(g, s);
+        makeEditable(t, s, 'label');
+      }
+
+      // talks
+      gTalks.innerHTML='';
+      for(const t of state.talks){
+        const g = el('g',{class:'talk draggable','data-id':t.id, style:'pointer-events:all'});
+        const x = t.align==='left'? t.x : t.align==='right'? (t.x-t.w) : (t.x - t.w/2);
+        const y = t.y - t.h/2;
+        const r = el('rect',{x, y, width:t.w, height:t.h, stroke:t.color});
+        const label = el('text',{x:x+12,y:t.y+4}); label.textContent=t.label;
+        g.appendChild(r); g.appendChild(label); gTalks.appendChild(g);
+        makeDraggable(g, t);
+        makeEditable(label, t, 'label');
+      }
+
+      buildLegend();
+      if(stage) stage.classList.toggle('hideLabels', !ui.labels.checked);
+    }
+
+    // path builders
+    function pathSmooth(points){
+      if(points.length<2) return '';
+      const p = points.map(pt=>({x:pt.x,y:pt.y}));
+      let d = `M ${p[0].x} ${p[0].y}`;
+      for(let i=0;i<p.length-1;i++){
+        const p0=p[i-1]||p[i]; const p1=p[i]; const p2=p[i+1]; const p3=p[i+2]||p2; const t=.25;
+        const cp1x=p1.x+(p2.x-p0.x)*t, cp1y=p1.y+(p2.y-p0.y)*t;
+        const cp2x=p2.x-(p3.x-p1.x)*t, cp2y=p2.y-(p3.y-p1.y)*t;
+        d+=` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+      }
+      return d;
+    }
+
+    function pathMetro(points){
+      if(points.length<2) return '';
+      const pts = points.map(p=>({x:snapValue(p.x), y:snapValue(p.y)}));
+      let d = `M ${pts[0].x} ${pts[0].y}`;
+      for(let i=0;i<pts.length-1;i++){
+        const a=pts[i], b=pts[i+1];
+        const mid = {x:b.x, y:a.y}; // horizontal then vertical
+        d += ` L ${mid.x} ${mid.y} L ${b.x} ${b.y}`;
+      }
+      return d;
+    }
+
+    // interactivity (pointer events with mouse/touch fallback)
+    function el(name, attrs={}){ const n=document.createElementNS('http://www.w3.org/2000/svg',name); for(const k in attrs) n.setAttribute(k, attrs[k]); return n; }
+    function svgPointFrom(x,y){ const pt=svg.createSVGPoint(); pt.x=x; pt.y=y; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+
+    function makeDraggable(g, obj){
+      let start=null;
+      const supportPointer = 'PointerEvent' in window;
+
+      function onStart(x,y, id){
+        if(!ui.edit.checked) return; g.classList.add('dragging');
+        const p = svgPointFrom(x,y); start={x:obj.x,y:obj.y,sx:p.x,sy:p.y, moved:false, id};
+      }
+      function onMove(x,y){ if(!start) return; const p = svgPointFrom(x,y); const dx=p.x-start.sx, dy=p.y-start.sy; const nx=snapValue(start.x+dx), ny=snapValue(start.y+dy); if(nx!==obj.x||ny!==obj.y) start.moved=true; obj.x=nx; obj.y=ny; draw(); }
+      function onEnd(){ if(!start) return; g.classList.remove('dragging'); start=null; }
+
+      if(supportPointer){
+        g.addEventListener('pointerdown', e=>{ g.setPointerCapture(e.pointerId); onStart(e.clientX, e.clientY, e.pointerId); });
+        g.addEventListener('pointermove', e=> onMove(e.clientX, e.clientY));
+        g.addEventListener('pointerup', ()=> onEnd());
+      } else {
+        // mouse
+        g.addEventListener('mousedown', e=>{ onStart(e.clientX, e.clientY, 'mouse'); e.preventDefault(); });
+        window.addEventListener('mousemove', e=> onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onEnd);
+        // touch
+        g.addEventListener('touchstart', e=>{ const t=e.touches[0]; onStart(t.clientX, t.clientY, 'touch'); e.preventDefault(); }, {passive:false});
+        window.addEventListener('touchmove', e=>{ const t=e.touches[0]||e.changedTouches[0]; if(!t) return; onMove(t.clientX, t.clientY); e.preventDefault(); }, {passive:false});
+        window.addEventListener('touchend', onEnd);
+      }
+
+      g.style.touchAction = 'none';
+      g.style.cursor = 'grab';
+    }
+
+    function makeEditable(textEl, obj, key){
+      textEl.style.userSelect='none';
+      textEl.addEventListener('dblclick', ()=>{ if(!ui.edit.checked) return; const v=prompt('Rename', obj[key]||''); if(v!==null && v.trim()){ obj[key]=v.trim(); draw(); }});
+      // long‑press for mobile
+      let timer=null; textEl.addEventListener('touchstart', ()=>{ if(!ui.edit.checked) return; timer=setTimeout(()=>{ const v=prompt('Rename', obj[key]||''); if(v!==null && v.trim()){ obj[key]=v.trim(); draw(); } }, 500); }, {passive:true});
+      textEl.addEventListener('touchend', ()=>{ if(timer) clearTimeout(timer); }, {passive:true});
+    }
+
+    // legend
+    function buildLegend(){
+      legend.innerHTML='';
+      for(const t of state.talks){
+        const row = document.createElement('div'); row.className='legend-item';
+        const sw = document.createElement('div'); sw.className='swatch'; sw.style.background=t.color; row.appendChild(sw);
+        const label = document.createElement('label');
+        const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=true; cb.addEventListener('change',()=>toggleRoute(t.id, cb.checked));
+        const span = document.createElement('span'); span.textContent=t.label; label.appendChild(cb); label.appendChild(span); row.appendChild(label); legend.appendChild(row);
+      }
+    }
+    function toggleRoute(id, vis){ qAll(`.route[data-talk="${id}"]`).forEach(p=>p.classList.toggle('hidden', !vis)); }
+
+    // zoom
+    let view={x:0,y:0,w:1600,h:1000};
+    function applyView(){ svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`); }
+    document.getElementById('zIn').addEventListener('click',()=>{ zoom(0.85); });
+    document.getElementById('zOut').addEventListener('click',()=>{ zoom(1.15); });
+    function zoom(f){ const cx=view.x+view.w/2, cy=view.y+view.h/2; view.w*=f; view.h*=f; view.x=cx-view.w/2; view.y=cy-view.h/2; applyView(); }
+    document.getElementById('btnFit').addEventListener('click',()=>{ view={x:0,y:0,w:1600,h:1000}; applyView(); });
+
+    // file ops
+    document.getElementById('btnReset').addEventListener('click',()=>{ state=clone(DEFAULT); ui.grid.value=DEFAULT.grid; drawGrid(); draw(); toast('Reset'); });
+    document.getElementById('btnSaveJSON').addEventListener('click',()=>download(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),'gi_symposium_metro_map.json'));
+    document.getElementById('fileJSON').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ state=JSON.parse(r.result); ui.grid.value=state.grid||20; drawGrid(); draw(); toast('JSON loaded'); }catch{ alert('Invalid JSON'); } }; r.readAsText(f); });
+
+    document.getElementById('btnExportSVG').addEventListener('click',()=>{ const s=new XMLSerializer().serializeToString(svg); download(new Blob([s],{type:'image/svg+xml'}),'gi_symposium_metro_map.svg'); });
+    document.getElementById('btnExportPNG').addEventListener('click',()=>{ const s=new XMLSerializer().serializeToString(svg); const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=3200; c.height=2000; const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0,c.width,c.height); c.toBlob(b=>download(b,'gi_symposium_metro_map.png')); }; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s); });
+
+    // ui toggles / sliders
+    ui.metro.addEventListener('change', ()=>{ if(ui.metro.checked) ui.smooth.checked=false; draw(); });
+    ui.smooth.addEventListener('change', ()=>{ if(ui.smooth.checked) ui.metro.checked=false; draw(); });
+    ui.labels.addEventListener('change', ()=> draw());
+    ui.grid.addEventListener('input', ()=>{ state.grid = Number(ui.grid.value); drawGrid(); draw(); });
+    ui.width.addEventListener('input', ()=> draw());
+
+    function download(blob, name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
+    function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1100); }
+
+    // init
+    drawGrid(); draw(); applyView();
+  })();
+  </script>
+</body>
+</html>
