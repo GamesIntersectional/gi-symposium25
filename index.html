@@ -238,6 +238,26 @@ header .brand{
   50%     { transform: translateY(0); }
 }
 
+.btn-row{display:flex; gap:.6rem; flex-wrap:wrap; margin: .8rem 0 0;}
+.btn{
+  display:inline-block;
+  padding:.7rem 1rem;
+  border-radius:999px;
+  border:1px solid rgba(46,23,64,.18);
+  text-decoration:none;
+  font-weight:700;
+  background:#fff;
+  color:#2e1740;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+.btn:hover{ text-decoration:underline; }
+.callout{
+  margin-top: 1.2rem;
+  padding: 1rem;
+  background-color: #fceeff;
+  border-left: 5px solid #cc00cc;
+  border-radius: 0.5rem;
+}
 	
 	
   </style>
@@ -248,36 +268,39 @@ header .brand{
 <header>
   <span class="brand">
 
-	  <span class="emoji-left" aria-hidden="true">✨🎮</span><br/>
-  <span class="header-text">Games Intersectional Symposium 2025</span>
-    <img
-      src="gis.png"
-      alt="Scholarly goose carrying pastel books"
-      class="logo-goose"
-      decoding="async"
-    />
-	
+    <span class="emoji-left" aria-hidden="true">✨🎮</span><br/>
+    <span class="header-text">Games Intersectional Symposium 2025</span>
+    <img src="gis.png" alt="Scholarly goose carrying pastel books" class="logo-goose" decoding="async" />
+
+  </span>
 </header>
 
 
   <nav>
     <a href="#info" onclick="showSection('info')">Info</a>
+	<a href="#proceedings" onclick="showSection('proceedings')">📚 Zine & Proceedings <span class="chip" style="background:#fff0f7;color:#b4006b;">NEW</span></a>
+	<a href="#about" onclick="showSection('about')">About Us</a>
 	<a href="#program" onclick="showSection('program')">Programme</a>
-    <a href="#apply" onclick="showSection('apply')">CfC</a>
+    <a href="#apply" onclick="showSection('apply')">Submissions (closed)</a>
     <a href="#timeline" onclick="showSection('timeline')">Timeline</a>
-    <a href="#proceedings" onclick="showSection('proceedings')">Proceedings</a>
-    <a href="#about" onclick="showSection('about')">About Us</a>
 	<a href="#contact" onclick="showSection('contact')">Contact</a>
   </nav>
 
   <main>
     <section id="symposium">
 	
-      <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📅 19th and 20th September 2025, online </h3>
-	  <h1 class="sr-only">Games Intersectional Symposium 2025 — Online, 19–20 September</h1>
+ <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📅 Archive: 19–20 September 2025 (online)</h3>
 
-	 <!--   <h2> The Call for Contributions is open until the 30th of June 2025, Time: 23:59 (anywhere on earth) </h2>
-	  -->
+
+<div class="callout">
+  <strong>📚 Published: GIS25 Zine + Proceedings</strong>
+  <p class="small-note">Read the zine, download the PDF, and explore the programme archive.</p>
+  <div class="btn-row">
+    <a class="btn" href="#proceedings" onclick="showSection('proceedings')">Open Zine & Proceedings! </a>
+
+  </div>
+</div>
+	 
 	  
 	  	<p style="font-size: 1.1rem;">We're creating a space for queer, BIPOC, disabled, neurodivergent, migrant people to come together around games, art, care, and resistance. Whether you’re an academic, a student, a developer, a streamer, or just curious about games — you belong here! </p>
 	  
@@ -292,11 +315,6 @@ header .brand{
 		  
 		  
 
-	  
-		  
-		<p style="font-size: 1.1rem; margin-top: 2rem; padding: 1rem; background-color: #fceeff; border-left: 5px solid #cc00cc; border-radius: 0.5rem;">
-		<strong>The symposium is completely free to attend and participate in!</strong>
-			</p>
 	  
 	  <hr style="border: none; border-top: 1px dashed #bbb; margin: 2rem 0;">
 	  
@@ -550,19 +568,16 @@ header .brand{
 	  
    
 
-    <details id="apply">
-      <summary>📮Call for Contributions</summary>
-			<p>You can submit via the embedded form below or <a href="https://forms.gle/AkqbPQL3kTHLTLtS6">open it in a new tab</a>.</p>
-
-	 <div style="position: relative; width: 100%; height: auto; overflow: hidden;">
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd731lFk5jTBuEeoibmAERvVocALLJ0KbztM3bXskDwkXfMqA/viewform?embedded=true"
-    width="100%" height="2000" frameborder="0" marginheight="0" marginwidth="0"
-    style="max-width: 100%; border: none;">
-    Loading…
-  </iframe>
-</div>
-	 
-    </details>
+<details id="apply">
+  <summary>📮 Call for Contributions (closed)</summary>
+  <p class="small-note">
+    Submissions are now closed — thank you to everyone who contributed 💜
+  </p>
+  <p>
+    If you want to get involved in future Games Intersectional events, feel free to reach out:
+    <a href="mailto:gamesintersectional@gmail.com">gamesintersectional@gmail.com</a>.
+  </p>
+</details>
 
     <details id="timeline">
       <summary>⏳ Timeline</summary>
@@ -573,22 +588,39 @@ header .brand{
   <li><span>📝</span><strong>May 2025:</strong> Call for Contributions opens</li>
   <li><span>📤</span><strong>30th of June 2025, 23:59(AoE):</strong> Submissions close</li>
   <li><span>👥</span><strong>End of July 2025:</strong> Feedback & Confirmations</li>
-  <li style="background: #fff0f7; border-left: 5px solid #cc00cc; padding: 0.8rem; margin-bottom: 1rem;"><span>📣</span><strong>September 1:</strong> Final Programme Announced</li>
+  <li><span>📣</span><strong>September 1:</strong> Final Programme Announced</li>
   <li><span>🌈</span><strong>September 19–20:</strong> GI Symposium!</li>
+  <li style="background: #fff0f7; border-left: 5px solid #cc00cc; padding: 0.8rem; margin-bottom: 1rem;"<span></span><strong>2026</strong> Zine and Proceedings are out! </li>
 </ul>
 	  
 	  </div>
 	  
     </details>
 
-    <details id="proceedings">
-      <summary>📚 Proceedings & Zine</summary>
-      <p>After the conference we will offer two forms of sharing work on our website:</p>
-      <ul>
-        <li><strong>Academic Proceedings:</strong> For those who need a formal publication record, we’ll host an open-access PDF collection of selected submissions.</li>
-        <li><strong>Creative Zine:</strong> A colorful, multimedia digital zine filled with weird, beautiful, non-traditional expressions from the symposium!</li>
-      </ul>
-    </details>
+<details id="proceedings">
+  <summary>📚 Proceedings & Zine</summary>
+
+  <h3>📘 Creative Zine</h3>
+  <div class="btn-row">
+    <a class="btn" href="zine.pdf">Download Zine (PDF)</a>
+  </div>
+  
+ <div style="position: relative; width: 100%; height: 0; padding-top: 143.1034%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG1UCS6JZM/2xIakTkQnT5q7exdjXs5Nw/watch?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+
+  <hr style="border: none; border-top: 1px dashed #bbb; margin: 2rem 0;">
+
+  <h3>📄 Academic Proceedings</h3>
+<p class="small-note"><em>Proceedings: coming soon.</em></p>
+
+  <!-- Optional: add a citation block later if you have a Zenodo/DOI -->
+</details>
+
 
 
 
@@ -609,7 +641,7 @@ header .brand{
     
     <div style="text-align: center; max-width: 160px;">
       <img src="kseniia2.jpg" alt="Kseniia Harshina" style="width: 100%; border-radius: 50%;">
-      <h3 style="margin: 0.5rem 0 0;">🐸 Kseniia Harshina (she/her) </h3>
+      <h3 style="margin: 0.5rem 0 0;">🐸 Kseniia Harshina (she/they) </h3>
       <p style="font-size: 0.9rem;"> I’m a PhD student researching games and forced migration. I believe academia can use more community and diversity!</p>
     </div>
 
