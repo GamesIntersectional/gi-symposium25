@@ -56,14 +56,14 @@
       margin: 0;
       padding: 0;
       font-family: 'Atkinson Hyperlegible', sans-serif;
-      background: linear-gradient(135deg, #ffb3ec, #b3d9ff, #baffc9);
+      background: linear-gradient(135deg, #ffd6ef, #dbe7ff);
       color: #3c1053;
       line-height: 1.6;
     }
 	
 header{
-  background: #ff9ccd;
-  padding: 3rem 2rem 1.5rem;
+  background: #ffb1d6;
+  padding: 2.2rem 2rem 1.2rem;
   text-align: center;
   color: #2e1740;
   font-size: 2.8rem;
@@ -72,13 +72,15 @@ header{
   border-bottom: 1px solid rgba(46,23,64,.08); /* subtle separation */
 }
 
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #a8f6ff; 
-      padding: 1rem;
-      flex-wrap: wrap;
-    }
+nav {
+  display: flex;
+  justify-content: center;
+  background: #e9fbff;  /* softer cyan */
+  padding: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(46,23,64,.10);
+  box-shadow: 0 2px 10px rgba(46,23,64,.08);
+}
 	
     nav a {
       margin: 0 1rem;
@@ -86,9 +88,12 @@ header{
       color: #2e1740;
       font-weight: bold;
       cursor: pointer;
+	  padding: .35rem .6rem;
+	  border-radius: 999px;
     }
     nav a:hover {
-      text-decoration: underline;
+	  background: rgba(255,255,255,.6);
+	  text-decoration: underline;
     }
     main {
       padding: 2rem;
@@ -251,11 +256,12 @@ header .brand{
   box-shadow: 0 1px 0 rgba(0,0,0,0.06);
 }
 .btn:hover{ text-decoration:underline; }
+
 .callout{
   margin-top: 1.2rem;
   padding: 1rem;
-  background-color: #fceeff;
-  border-left: 5px solid #cc00cc;
+  background-color: #fff6e9;          /* warm cream */
+  border-left: 6px solid #cc00cc;
   border-radius: 0.5rem;
 }
 	
@@ -267,18 +273,16 @@ header .brand{
 
 <header>
   <span class="brand">
-
-    <span class="emoji-left" aria-hidden="true">✨🎮</span><br/>
+    <span class="emoji-left" aria-hidden="true">✨🎮</span>
     <span class="header-text">Games Intersectional Symposium 2025</span>
     <img src="gis.png" alt="Scholarly goose carrying pastel books" class="logo-goose" decoding="async" />
-
   </span>
 </header>
 
 
   <nav>
     <a href="#info" onclick="showSection('info')">Info</a>
-	<a href="#proceedings" onclick="showSection('proceedings')">📚 Zine & Proceedings <span class="chip" style="background:#fff0f7;color:#b4006b;">NEW</span></a>
+	<a href="#proceedings" onclick="showSection('proceedings')"> Zine & Proceedings <span class="chip" style="background:#fff0f7;color:#b4006b;">NEW</span></a>
 	<a href="#about" onclick="showSection('about')">About Us</a>
 	<a href="#program" onclick="showSection('program')">Programme</a>
     <a href="#apply" onclick="showSection('apply')">Submissions (closed)</a>
@@ -287,39 +291,31 @@ header .brand{
   </nav>
 
   <main>
-    <section id="symposium">
-	
- <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">📅 Archive: 19–20 September 2025 (online)</h3>
+<section id="symposium">
 
+  <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">September 19–20, 2025 • Online</h3>
 
-<div class="callout">
-  <strong>📚 Published: GIS25 Zine + Proceedings</strong>
-  <p class="small-note">Read the zine, download the PDF, and explore the programme archive.</p>
-  <div class="btn-row">
-    <a class="btn" href="#proceedings" onclick="showSection('proceedings')">Open Zine & Proceedings! </a>
+  <p style="font-size: 1.1rem;">
+    We're creating a space for queer, BIPOC, disabled, neurodivergent, migrant people to come together around games, art, care, and resistance.
+    Whether you’re an academic, a student, a developer, a streamer, or just curious about games — you belong here!
+  </p>
 
+  <div class="callout" style="margin-top: 1rem;">
+    <strong>📚 The GIS25 Zine is out!</strong>
+    <div class="btn-row">
+      <a class="btn" href="#proceedings" onclick="showSection('proceedings')">Open Zine</a>
+      <a class="btn" href="zine.pdf">Download PDF</a>
+    </div>
   </div>
-</div>
-	 
-	  
-	  	<p style="font-size: 1.1rem;">We're creating a space for queer, BIPOC, disabled, neurodivergent, migrant people to come together around games, art, care, and resistance. Whether you’re an academic, a student, a developer, a streamer, or just curious about games — you belong here! </p>
-	  
-      <div class="poster-grid" aria-label="Printable posters of the schedule">
-        <figure>
-          <img src="1.png" alt="Day 1 poster: Games Intersectional Symposium 2025, Friday schedule with sessions from 10:00 to 15:40 including talks by Nic Kilzer, Alex; demo by Eileen Carette; talk by Flo Schäfer; performance Intrapology by Zoyander Street." />
-        </figure>
-        <figure>
-          <img src="2.png" alt="Day 2 poster: Saturday schedule with brunch at 10:00; sessions by Milica Marković, Srikanth, Laura, Jack Gutmann, Ricardo; and Tan Schütz; end at 15:40." />
-        </figure>
-      </div>
-		  
-		  
 
-	  
-	  <hr style="border: none; border-top: 1px dashed #bbb; margin: 2rem 0;">
-	  
-	  
-	  </section>
+  <div class="poster-grid" aria-label="Printable posters of the schedule">
+    <figure><img src="1.png" alt="Day 1 poster: ..." /></figure>
+    <figure><img src="2.png" alt="Day 2 poster: ..." /></figure>
+  </div>
+
+
+  <hr style="border: none; border-top: 1px dashed #bbb; margin: 2rem 0;">
+</section>
 
 	<details id="info">
 	<summary>🎮 About the Symposium </summary>
@@ -568,16 +564,7 @@ header .brand{
 	  
    
 
-<details id="apply">
-  <summary>📮 Call for Contributions (closed)</summary>
-  <p class="small-note">
-    Submissions are now closed — thank you to everyone who contributed 💜
-  </p>
-  <p>
-    If you want to get involved in future Games Intersectional events, feel free to reach out:
-    <a href="mailto:gamesintersectional@gmail.com">gamesintersectional@gmail.com</a>.
-  </p>
-</details>
+
 
     <details id="timeline">
       <summary>⏳ Timeline</summary>
@@ -681,6 +668,18 @@ header .brand{
   
   
     </details>
+	
+	
+<details id="apply">
+  <summary>📮 Call for Contributions (closed)</summary>
+  <p class="small-note">
+    Submissions are now closed — thank you to everyone who contributed 💜
+  </p>
+  <p>
+    If you want to get involved in future Games Intersectional events, feel free to reach out:
+    <a href="mailto:gamesintersectional@gmail.com">gamesintersectional@gmail.com</a>.
+  </p>
+</details>
 	
 	    <details id="contact">
       <summary>📬 Contact</summary>
